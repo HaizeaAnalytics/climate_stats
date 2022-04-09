@@ -1,8 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:climate_stats/authentication_service.dart';
 import 'package:climate_stats/home_page.dart';
 import 'package:climate_stats/sign_in_page.dart';
+
+import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';

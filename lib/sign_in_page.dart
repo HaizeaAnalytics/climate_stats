@@ -1,7 +1,7 @@
-import 'dart:html';
+import 'package:climate_stats/app_bar.dart';
+import 'package:climate_stats/authentication_service.dart';
 
 import 'package:flutter/material.dart';
-import 'package:climate_stats/authentication_service.dart';
 import 'package:provider/provider.dart';
 
 class SignInPage extends StatelessWidget {
@@ -11,29 +11,31 @@ class SignInPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        appBar: appBar('Sign in'),
         body: Column(
-      children: [
-        TextField(
-          controller: emailController,
-          decoration: const InputDecoration(
-            labelText: "Email",
-          ),
-        ),
-        TextField(
-          controller: passwordController,
-          decoration: const InputDecoration(
-            labelText: "Password",
-          ),
-        ),
-        ElevatedButton(
-          onPressed: () {
-            context.read<AuthenticationService>().signIn(
-                email: emailController.text.trim(),
-                password: passwordController.text.trim());
-          },
-          child: const Text("Sign in"),
-        )
-      ],
-    ));
+          children: [
+            TextField(
+              controller: emailController,
+              decoration: const InputDecoration(
+                labelText: "Email",
+              ),
+            ),
+            TextField(
+              obscureText: true,
+              controller: passwordController,
+              decoration: const InputDecoration(
+                labelText: "Password",
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                context.read<AuthenticationService>().signIn(
+                    email: emailController.text.trim(),
+                    password: passwordController.text.trim());
+              },
+              child: const Text("Sign in"),
+            )
+          ],
+        ));
   }
 }
