@@ -11,12 +11,14 @@ class SignInPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: appBar('Sign in'),
-        body: Column(
-          children: [
+      appBar: appBar('Sign in'),
+      body: Center(
+        child: Column(
+          children: <Widget>[
             TextField(
               controller: emailController,
               decoration: const InputDecoration(
+                border: OutlineInputBorder(),
                 labelText: "Email",
               ),
             ),
@@ -24,6 +26,7 @@ class SignInPage extends StatelessWidget {
               obscureText: true,
               controller: passwordController,
               decoration: const InputDecoration(
+                border: OutlineInputBorder(),
                 labelText: "Password",
               ),
             ),
@@ -36,6 +39,8 @@ class SignInPage extends StatelessWidget {
               child: const Text("Sign in"),
             )
           ],
-        ));
+        ),
+      ),
+    );
   }
 }
