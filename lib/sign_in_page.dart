@@ -38,14 +38,28 @@ class _InputFieldsState extends State<InputFields> {
         child: SizedBox(
           width: 600,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              // Email field
+              // Page Heading
+              const Text(
+                "Welcome to Haizea Climate Statistics",
+                textScaleFactor: 2.5,
+              ),
+              const SizedBox(
+                height: 50,
+              ),
+              // Email Field
               TextFormField(
                 controller: emailController,
-                decoration: const InputDecoration(
-                  icon: Icon(Icons.person),
+                decoration: InputDecoration(
+                  prefixIcon: const Icon(Icons.person_outline),
                   hintText: 'Email',
+                  filled: true,
+                  fillColor: Colors.lightBlue[100],
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                      borderSide:
+                          const BorderSide(width: 0, style: BorderStyle.none)),
                 ),
                 validator: (String? value) {
                   if (value == null || value.isEmpty) {
@@ -54,14 +68,22 @@ class _InputFieldsState extends State<InputFields> {
                   return null;
                 },
               ),
-
-              // Password field
+              const SizedBox(
+                height: 10,
+              ),
+              // Password Field
               TextFormField(
                 obscureText: true,
                 controller: passwordController,
-                decoration: const InputDecoration(
-                  icon: Icon(Icons.password),
+                decoration: InputDecoration(
+                  prefixIcon: const Icon(Icons.lock_outline_rounded),
                   hintText: 'Password',
+                  filled: true,
+                  fillColor: Colors.lightBlue[100],
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                      borderSide:
+                          const BorderSide(width: 0, style: BorderStyle.none)),
                 ),
                 validator: (String? value) {
                   if (value == null || value.isEmpty) {
@@ -70,23 +92,41 @@ class _InputFieldsState extends State<InputFields> {
                   return null;
                 },
               ),
+              // Sign in (submit) button
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
-
-                // Submit button
                 child: ElevatedButton(
                   onPressed: () {
-                    // Validate will return true if the form is valid, or false if
-                    // the form is invalid.
+                    // Validate will return true if the form is valid,
+                    // or false if the form is invalid
                     if (_formKey.currentState!.validate()) {
-                      // Process data.
+                      // Sign the user in
                       context.read<AuthenticationService>().signIn(
                           email: emailController.text.trim(),
                           password: passwordController.text.trim());
                     }
                   },
-                  child: const Text('Sign in'),
+                  child: const Text('Log in'),
                 ),
+              ),
+              // Other buttons
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Sign up button
+                  ElevatedButton(
+                    onPressed: () {
+                      // TODO: implement sign up
+                    },
+                    child: const Text('First time? Sign up!'),
+                  ),
+                  // Forgot password button
+                  ElevatedButton(
+                      onPressed: () {
+                        // TODO: implement forgot password
+                      },
+                      child: const Text('Forgot Password?'))
+                ],
               ),
             ],
           ),
