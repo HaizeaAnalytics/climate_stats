@@ -5,40 +5,91 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class SignInPage extends StatelessWidget {
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
+  const SignInPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBar('Sign in'),
-      body: Center(
-        child: Column(
-          children: <Widget>[
-            TextField(
-              controller: emailController,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: "Email",
+      body: const InputFields(),
+    );
+  }
+}
+
+class InputFields extends StatefulWidget {
+  const InputFields({Key? key}) : super(key: key);
+
+  @override
+  State<InputFields> createState() => _InputFieldsState();
+}
+
+class _InputFieldsState extends State<InputFields> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  // Initialise controllers for text fields
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Form(
+      key: _formKey,
+      child: Center(
+        child: SizedBox(
+          width: 600,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              // Email field
+              TextFormField(
+                controller: emailController,
+                decoration: const InputDecoration(
+                  icon: Icon(Icons.person),
+                  hintText: 'Email',
+                ),
+                validator: (String? value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your email address';
+                  }
+                  return null;
+                },
               ),
-            ),
-            TextField(
-              obscureText: true,
-              controller: passwordController,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: "Password",
+
+              // Password field
+              TextFormField(
+                obscureText: true,
+                controller: passwordController,
+                decoration: const InputDecoration(
+                  icon: Icon(Icons.password),
+                  hintText: 'Password',
+                ),
+                validator: (String? value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your password';
+                  }
+                  return null;
+                },
               ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                context.read<AuthenticationService>().signIn(
-                    email: emailController.text.trim(),
-                    password: passwordController.text.trim());
-              },
-              child: const Text("Sign in"),
-            )
-          ],
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+
+                // Submit button
+                child: ElevatedButton(
+                  onPressed: () {
+                    // Validate will return true if the form is valid, or false if
+                    // the form is invalid.
+                    if (_formKey.currentState!.validate()) {
+                      // Process data.
+                      context.read<AuthenticationService>().signIn(
+                          email: emailController.text.trim(),
+                          password: passwordController.text.trim());
+                    }
+                  },
+                  child: const Text('Sign in'),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
