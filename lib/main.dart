@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
-        title: 'Authentication Demo',
+        title: 'Haizea Client Application',
         theme: ThemeData(
             textTheme: GoogleFonts.senTextTheme(Theme.of(context).textTheme),
             primarySwatch: Colors.grey,
@@ -52,7 +52,7 @@ class AuthenticationWrapper extends StatelessWidget {
     final firebaseUser = context.watch<User?>();
 
     if (firebaseUser != null) {
-      return const HomePage();
+      return HomePage(firebaseUser);
     }
     return const SignInPage();
   }

@@ -1,9 +1,21 @@
 import 'package:climate_stats/app_bar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+const String databaseName = "userInfo";
+String userEmail = "";
 
 class ProfilePage extends StatelessWidget {
-  const ProfilePage({Key? key}) : super(key: key);
-
+  //const ProfilePage({Key? key}) : super(key: key);
+  User userInfo;
+  String lastLoginTime = "";
+  ProfilePage(this.userInfo) {
+    userEmail = userInfo.email.toString();
+    lastLoginTime = userInfo.metadata.lastSignInTime!.toLocal().toString();
+    print(lastLoginTime);
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -11,9 +23,9 @@ class ProfilePage extends StatelessWidget {
         appBar: appBar('Profile'),
         body: Container(
           child: Column(
-            children: const [
+            children: [
               LogoArea(),
-              PageInfo(),
+              PageInfo(this.lastLoginTime),
               AccountInfoFields(),
             ],
           ),
@@ -50,13 +62,11 @@ class LogoArea extends StatelessWidget {
 Page information
  */
 class PageInfo extends StatelessWidget {
-  const PageInfo({Key? key}) : super(key: key);
-
+  //const PageInfo({Key? key}) : super(key: key);
+  String lastLoginTime;
+  PageInfo(this.lastLoginTime);
   @override
   Widget build(BuildContext context) {
-    DateTime now = new DateTime.now();
-    DateTime date = new DateTime(now.year, now.month, now.day);
-
     return Container(
       child: Column(
         children: [
@@ -66,10 +76,14 @@ class PageInfo extends StatelessWidget {
                 fontSize: 54.0,
                 color: Colors.white,
               )),
-          Text("Last login: " + date.toString()),
+          Text(
+            "Last login: " + lastLoginTime,
+            style: TextStyle(
+              color: Colors.white,
+            ),
+          ),
         ],
       ),
-      width: double.infinity,
     );
   }
 }
@@ -79,7 +93,6 @@ Account Info
  */
 class AccountInfoFields extends StatefulWidget {
   const AccountInfoFields({Key? key}) : super(key: key);
-
   @override
   State<AccountInfoFields> createState() => _AccountInfoFieldsState();
 }
@@ -88,11 +101,34 @@ class _AccountInfoFieldsState extends State<AccountInfoFields> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   // Initialise controllers for text fields
-  final TextEditingController firstNameController = TextEditingController();
+  TextEditingController firstNameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
+
+  _AccountInfoFieldsState() {
+    FirebaseFirestore.instance
+        .collection(databaseName)
+        .doc(userEmail)
+        .get()
+        .then((DocumentSnapshot documentSnapshot) {
+      if (documentSnapshot.exists) {
+        firstNameController.value =
+            TextEditingValue(text: documentSnapshot.get("firstname"));
+        lastNameController.value =
+            TextEditingValue(text: documentSnapshot.get("lastname"));
+        passwordController.value =
+            TextEditingValue(text: documentSnapshot.get("password"));
+        phoneController.value =
+            TextEditingValue(text: documentSnapshot.get("phone"));
+        emailController.value =
+            TextEditingValue(text: documentSnapshot.get("email"));
+      } else {
+        print('Document does not exist on the database');
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -100,7 +136,7 @@ class _AccountInfoFieldsState extends State<AccountInfoFields> {
       key: _formKey,
       child: Center(
         child: SizedBox(
-          width: 600,
+          width: 450,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
@@ -110,7 +146,10 @@ class _AccountInfoFieldsState extends State<AccountInfoFields> {
                     fontSize: 48.0,
                     color: Colors.white,
                   )),
-              const Text("Name",
+              const SizedBox(
+                height: 10,
+              ),
+              const Text("First name",
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 24.0,
@@ -124,7 +163,7 @@ class _AccountInfoFieldsState extends State<AccountInfoFields> {
                   prefixIcon: const Icon(Icons.person_outline),
                   hintText: 'First name',
                   filled: true,
-                  fillColor: Colors.lightBlue[100],
+                  fillColor: Colors.white,
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(30.0),
                       borderSide:
@@ -138,13 +177,19 @@ class _AccountInfoFieldsState extends State<AccountInfoFields> {
                 },
               ),
 
+              const Text("Last name",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 24.0,
+                    color: Colors.white,
+                  )),
               TextFormField(
                 controller: lastNameController,
                 decoration: InputDecoration(
                   prefixIcon: const Icon(Icons.person_outline),
                   hintText: 'Last name',
                   filled: true,
-                  fillColor: Colors.lightBlue[100],
+                  fillColor: Colors.white,
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(30.0),
                       borderSide:
@@ -172,7 +217,7 @@ class _AccountInfoFieldsState extends State<AccountInfoFields> {
                   prefixIcon: const Icon(Icons.lock_outline_rounded),
                   hintText: 'Password',
                   filled: true,
-                  fillColor: Colors.lightBlue[100],
+                  fillColor: Colors.white,
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(30.0),
                       borderSide:
@@ -196,10 +241,10 @@ class _AccountInfoFieldsState extends State<AccountInfoFields> {
               TextFormField(
                 controller: phoneController,
                 decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.person_outline),
+                  prefixIcon: const Icon(Icons.phone),
                   hintText: 'Phone',
                   filled: true,
-                  fillColor: Colors.lightBlue[100],
+                  fillColor: Colors.white,
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(30.0),
                       borderSide:
@@ -223,10 +268,10 @@ class _AccountInfoFieldsState extends State<AccountInfoFields> {
               TextFormField(
                 controller: emailController,
                 decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.person_outline),
+                  prefixIcon: const Icon(Icons.email),
                   hintText: 'Email',
                   filled: true,
-                  fillColor: Colors.lightBlue[100],
+                  fillColor: Colors.white,
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(30.0),
                       borderSide:
@@ -251,7 +296,24 @@ class _AccountInfoFieldsState extends State<AccountInfoFields> {
                     // Validate will return true if the form is valid,
                     // or false if the form is invalid
                     if (_formKey.currentState!.validate()) {
-                      // submit changes
+                      // submit changes.
+                      CollectionReference users =
+                          FirebaseFirestore.instance.collection(databaseName);
+
+                      //Future<void> updateUser() {
+                      users
+                          .doc(userEmail)
+                          .update({
+                            'firstname': firstNameController.text.trim(),
+                            'lastname': lastNameController.text.trim(),
+                            'password': passwordController.text.trim(),
+                            'phone': phoneController.text.trim(),
+                            'email': emailController.text.trim()
+                          })
+                          .then((value) => _showDialog(context))
+                          .catchError((error) =>
+                              print("Failed to update user: $error"));
+                      //}
                     }
                   },
                   child: const Text("Save details"),
@@ -263,4 +325,22 @@ class _AccountInfoFieldsState extends State<AccountInfoFields> {
       ),
     );
   }
+}
+
+_showDialog(BuildContext context) {
+  return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Account information updated"),
+          actions: <Widget>[
+            FlatButton(
+              child: const Text("Back"),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      });
 }
