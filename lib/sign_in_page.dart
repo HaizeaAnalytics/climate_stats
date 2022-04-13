@@ -1,4 +1,3 @@
-import 'package:climate_stats/app_bar.dart';
 import 'package:climate_stats/authentication_service.dart';
 
 import 'package:flutter/material.dart';
@@ -9,9 +8,8 @@ class SignInPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: appBar('Sign in'),
-      body: const InputFields(),
+    return const Scaffold(
+      body: InputFields(),
     );
   }
 }
@@ -26,112 +24,163 @@ class InputFields extends StatefulWidget {
 class _InputFieldsState extends State<InputFields> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
+  bool _isHidden = true;
+
   // Initialise controllers for text fields
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: Center(
-        child: SizedBox(
-          width: 600,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              // Page Heading
-              const Text(
-                "Welcome to Haizea Climate Statistics",
-                textScaleFactor: 2.5,
-              ),
-              const SizedBox(
-                height: 50,
-              ),
-              // Email Field
-              TextFormField(
-                controller: emailController,
-                decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.person_outline),
-                  hintText: 'Email',
-                  filled: true,
-                  fillColor: Colors.lightBlue[100],
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30.0),
-                      borderSide:
-                          const BorderSide(width: 0, style: BorderStyle.none)),
+    return Container(
+      decoration: BoxDecoration(
+          image: DecorationImage(
+        image: const AssetImage("background.jpg"),
+        fit: BoxFit.cover,
+        colorFilter:
+            ColorFilter.mode(Colors.black.withAlpha(100), BlendMode.darken),
+      )),
+      child: Form(
+        key: _formKey,
+        child: Center(
+          child: SizedBox(
+            width: 800,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                // Page Heading
+                Image.asset("haizea.png", scale: 3.2),
+                const SizedBox(
+                  height: 50,
                 ),
-                validator: (String? value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your email address';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              // Password Field
-              TextFormField(
-                obscureText: true,
-                controller: passwordController,
-                decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.lock_outline_rounded),
-                  hintText: 'Password',
-                  filled: true,
-                  fillColor: Colors.lightBlue[100],
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30.0),
-                      borderSide:
-                          const BorderSide(width: 0, style: BorderStyle.none)),
+                const Text("Welcome to Haizea Climate Statistics.",
+                    textScaleFactor: 2.5,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    )),
+                const SizedBox(
+                  height: 50,
                 ),
-                validator: (String? value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your password';
-                  }
-                  return null;
-                },
-              ),
-              // Sign in (submit) button
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
-                child: ElevatedButton(
-                  onPressed: () {
-                    // Validate will return true if the form is valid,
-                    // or false if the form is invalid
-                    if (_formKey.currentState!.validate()) {
-                      // Sign the user in
-                      context.read<AuthenticationService>().signIn(
-                          email: emailController.text.trim(),
-                          password: passwordController.text.trim());
-                    }
-                  },
-                  child: const Text('Log in'),
-                ),
-              ),
-              // Other buttons
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Sign up button
-                  ElevatedButton(
-                    onPressed: () {
-                      // TODO: implement sign up
-                    },
-                    child: const Text('First time? Sign up!'),
+                // Email Field
+                SizedBox(
+                  width: 500,
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        controller: emailController,
+                        decoration: InputDecoration(
+                          prefixIcon: const Icon(Icons.person_outline),
+                          hintText: 'Email',
+                          filled: true,
+                          fillColor: Colors.grey[300],
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20.0),
+                              borderSide: const BorderSide(
+                                  width: 0, style: BorderStyle.none)),
+                        ),
+                        validator: (String? value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your email address';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      // Password Field
+                      TextFormField(
+                        obscureText: _isHidden,
+                        controller: passwordController,
+                        decoration: InputDecoration(
+                          prefixIcon: const Icon(Icons.lock_outline_rounded),
+                          suffixIcon: GestureDetector(
+                              onTap: _togglePasswordView,
+                              child: Icon(_isHidden
+                                  ? Icons.visibility
+                                  : Icons.visibility_off)),
+                          hintText: 'Password',
+                          filled: true,
+                          fillColor: Colors.grey[300],
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20.0),
+                              borderSide: const BorderSide(
+                                  width: 0, style: BorderStyle.none)),
+                        ),
+                        validator: (String? value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your password';
+                          }
+                          return null;
+                        },
+                      ),
+                    ],
                   ),
-                  // Forgot password button
-                  ElevatedButton(
-                      onPressed: () {
-                        // TODO: implement forgot password
-                      },
-                      child: const Text('Forgot Password?'))
-                ],
-              ),
-            ],
+                ),
+                // Sign in (submit) button
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Colors.grey.shade200),
+                    ),
+                    onPressed: () {
+                      // Validate will return true if the form is valid,
+                      // or false if the form is invalid
+                      if (_formKey.currentState!.validate()) {
+                        // Sign the user in
+                        context.read<AuthenticationService>().signIn(
+                            email: emailController.text.trim(),
+                            password: passwordController.text.trim());
+                      }
+                    },
+                    child: const Text('Log in'),
+                  ),
+                ),
+                // Other buttons
+                Container(
+                  width: 300,
+                  color: Colors.black.withAlpha(200),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Sign up button
+                      TextButton(
+                        onPressed: () {
+                          // TODO: implement sign up
+                        },
+                        child: const Text('First time? Sign up!',
+                            style: TextStyle(
+                              color: Colors.white,
+                              decoration: TextDecoration.underline,
+                            )),
+                      ),
+                      // Forgot password button
+                      TextButton(
+                          onPressed: () {
+                            // TODO: implement forgot password
+                          },
+                          child: const Text('Forgot Password?',
+                              style: TextStyle(
+                                color: Colors.white,
+                                decoration: TextDecoration.underline,
+                              ))),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
+  }
+
+  void _togglePasswordView() {
+    setState(() {
+      _isHidden = !_isHidden;
+    });
   }
 }

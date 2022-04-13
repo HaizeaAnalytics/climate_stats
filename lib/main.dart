@@ -7,6 +7,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,7 +36,8 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Authentication Demo',
         theme: ThemeData(
-            primarySwatch: Colors.blue,
+            textTheme: GoogleFonts.senTextTheme(Theme.of(context).textTheme),
+            primarySwatch: Colors.grey,
             visualDensity: VisualDensity.adaptivePlatformDensity),
         home: const AuthenticationWrapper(),
       ),
