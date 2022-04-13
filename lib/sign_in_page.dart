@@ -24,6 +24,7 @@ class InputFields extends StatefulWidget {
 class _InputFieldsState extends State<InputFields> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
+  // Password Visibility
   bool _isHidden = true;
 
   // Initialise controllers for text fields
@@ -33,6 +34,7 @@ class _InputFieldsState extends State<InputFields> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      // Background image
       decoration: BoxDecoration(
           image: DecorationImage(
         image: const AssetImage("background.jpg"),
@@ -48,7 +50,7 @@ class _InputFieldsState extends State<InputFields> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                // Page Heading
+                // Logo
                 Image.asset("haizea.png", scale: 3.2),
                 const SizedBox(
                   height: 50,
@@ -178,6 +180,7 @@ class _InputFieldsState extends State<InputFields> {
     );
   }
 
+  // Password Visibility
   void _togglePasswordView() {
     setState(() {
       _isHidden = !_isHidden;
