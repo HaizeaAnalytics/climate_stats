@@ -1,5 +1,6 @@
 import 'package:climate_stats/authentication_service.dart';
 import 'package:climate_stats/app_bar.dart';
+import 'profile_page.dart';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -20,6 +21,15 @@ class HomePage extends StatelessWidget {
                 context.read<AuthenticationService>().signOut();
               },
               child: const Text("Sign out"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ProfilePage()),
+                );
+              },
+              child: const Text("Profile Page"),
             ),
           ],
         ),
