@@ -21,7 +21,7 @@ class EmailField extends StatefulWidget {
 class _EmailFieldState extends State<EmailField> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  // Initialise controllers for email field
+  // Initialise controller for email field
   final TextEditingController emailController = TextEditingController();
 
   @override
@@ -50,6 +50,7 @@ class _EmailFieldState extends State<EmailField> {
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
                     )),
+
                 const SizedBox(
                   height: 50,
                 ),
@@ -76,6 +77,7 @@ class _EmailFieldState extends State<EmailField> {
                     return null;
                   },
                 ),
+
                 const SizedBox(
                   height: 16,
                 ),
@@ -105,6 +107,7 @@ class _EmailFieldState extends State<EmailField> {
                 ),
 
                 // Back button
+                // Return user to previous (sign-in) page
                 ElevatedButton(
                   onPressed: () {
                     Navigator.of(context).pop();
@@ -129,8 +132,21 @@ class _EmailFieldState extends State<EmailField> {
       if (list.isNotEmpty) {
         return true;
       }
+      showDialog(
+          context: context,
+          builder: (BuildContext context) => const AlertDialog(
+                title: Text('Account Not Found'),
+                content: Text(
+                    'Oops! No user accounts were found for that email address. \nPlease check the spelling and try again.'),
+              ));
       return false;
     } on FirebaseAuthException {
+      showDialog(
+          context: context,
+          builder: (BuildContext context) => const AlertDialog(
+                title: Text('Invalid Email Address'),
+                content: Text('Please check the spelling and try again.'),
+              ));
       return false;
     }
   }
