@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class ResetPassword extends StatelessWidget {
@@ -7,19 +6,19 @@ class ResetPassword extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      body: emailField(),
+      body: EmailField(),
     );
   }
 }
 
-class emailField extends StatefulWidget {
-  const emailField({Key? key}) : super(key: key);
+class EmailField extends StatefulWidget {
+  const EmailField({Key? key}) : super(key: key);
 
   @override
-  State<emailField> createState() => _EmailFieldState();
+  State<EmailField> createState() => _EmailFieldState();
 }
 
-class _EmailFieldState extends State<emailField> {
+class _EmailFieldState extends State<EmailField> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   // Initialise controllers for email field
@@ -44,6 +43,18 @@ class _EmailFieldState extends State<emailField> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
+                // Instruction text
+                const Text("Enter your email to receive a password reset link",
+                    textScaleFactor: 2.5,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    )),
+                const SizedBox(
+                  height: 50,
+                ),
+
+                // Text field for user email address
                 TextFormField(
                   controller: emailController,
                   decoration: InputDecoration(
@@ -56,6 +67,8 @@ class _EmailFieldState extends State<emailField> {
                         borderSide: const BorderSide(
                             width: 0, style: BorderStyle.none)),
                   ),
+
+                  // If an email address is not provided, prompt user
                   validator: (String? value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your email address';
@@ -66,18 +79,37 @@ class _EmailFieldState extends State<emailField> {
                 const SizedBox(
                   height: 16,
                 ),
+
+                // Reset password (submit) button
                 ElevatedButton(
-                  onPressed: () {
-                    // Validate will return true if the form is valid,
-                    // or false if the form is invalid
-                    if (_formKey.currentState!.validate()) {
+                  onPressed: () async {
+                    // Get email address from field
+                    String emailAddress = emailController.text.trim();
+
+                    // Validate email and ensure that email has an
+                    // associated user account.
+                    // If so, then send a password reset email and return user
+                    // to sign_in_page.
+                    if (_formKey.currentState!.validate() &&
+                        await emailInUse(email: emailAddress)) {
                       FirebaseAuth.instance
-                          .sendPasswordResetEmail(
-                              email: emailController.text.trim())
+                          .sendPasswordResetEmail(email: emailAddress)
                           .then((value) => Navigator.of(context).pop());
                     }
                   },
                   child: const Text("Reset Password"),
+                ),
+
+                const SizedBox(
+                  height: 16,
+                ),
+
+                // Back button
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text("Back"),
                 ),
               ],
             ),
@@ -85,5 +117,21 @@ class _EmailFieldState extends State<emailField> {
         ),
       ),
     );
+  }
+
+  // Return a bool
+  // true if the given email has an associated user account,
+  // false otherwise
+  Future<bool> emailInUse({required String email}) async {
+    try {
+      final list =
+          await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
+      if (list.isNotEmpty) {
+        return true;
+      }
+      return false;
+    } on FirebaseAuthException {
+      return false;
+    }
   }
 }
