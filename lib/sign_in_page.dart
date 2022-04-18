@@ -1,4 +1,5 @@
 import 'package:climate_stats/authentication_service.dart';
+import 'package:climate_stats/reset_password.dart';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -162,7 +163,11 @@ class _InputFieldsState extends State<InputFields> {
                       // Forgot password button
                       TextButton(
                           onPressed: () {
-                            // TODO: implement forgot password
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const ResetPassword()),
+                            );
                           },
                           child: const Text('Forgot Password?',
                               style: TextStyle(
