@@ -24,7 +24,14 @@ class HomePage extends StatelessWidget {
     '10 Downing Street, London'
   ];
 
+  List<String> items = <String>[
+    'Low',
+    'Medium',
+    'High',
+  ];
+
   HomePage(this.userInfo) {
+
     userEmail = userInfo.email.toString();
     lastLoginTime = userInfo.metadata.lastSignInTime!.toLocal().toString();
   }
@@ -39,6 +46,10 @@ class HomePage extends StatelessWidget {
             LogoArea(),
             PageInfo(this.lastLoginTime),
 
+            SizedBox(
+              height: 10,
+            ),
+
             /*************/
             Container(
               width: 500,
@@ -46,7 +57,8 @@ class HomePage extends StatelessWidget {
               child: TextField(
                 autofocus: true,
                 decoration: InputDecoration(
-                    labelText: "Finds somewhere new.",
+                    // labelText: "Finds somewhere new.",
+                    // labelStyle: TextStyle(fontSize: 24),
                     hintText: "Search",
                     prefixIcon: Icon(Icons.search),
                     filled: true,
@@ -70,15 +82,7 @@ class HomePage extends StatelessWidget {
                       color: Colors.white,
                     ),
                 ),
-                SizedBox(width: 400,),
-                Text("Maps",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 24.0,
-                      color: Colors.white,
-                    ),
-                ),
+                SizedBox(width: 900,),
               ],
             ),
 
@@ -121,18 +125,18 @@ class HomePage extends StatelessWidget {
                   child: FlutterMap(
                     options: MapOptions(
                       center: latLng.LatLng(-35.28,149.13),
-                      zoom: 16.0,
+                      zoom: 14.0,
                     ),
                     layers: [
                       MarkerLayerOptions(
                         markers: [
                           Marker(
-                            width: 20.0,
-                            height: 20.0,
+                            width: 40.0,
+                            height: 40.0,
                             point: latLng.LatLng(-35.28,149.13),
                             builder: (ctx) =>
                                 Container(
-                                  child: FlutterLogo(),
+                                  child:Image.asset('../assets/RoundIcon.png', fit: BoxFit.cover),
                                 ),
                           ),
                         ],
@@ -146,12 +150,12 @@ class HomePage extends StatelessWidget {
                       MarkerLayerWidget(options: MarkerLayerOptions(
                         markers: [
                           Marker(
-                            width: 20.0,
-                            height: 20.0,
+                            width: 40.0,
+                            height: 40.0,
                             point: latLng.LatLng(-35.28,149.13),
                             builder: (ctx) =>
                                 Container(
-                                  child: FlutterLogo(),
+                                  child:Image.asset('../assets/RoundIcon.png', fit: BoxFit.cover),
                                 ),
                           ),
                         ],
@@ -164,19 +168,37 @@ class HomePage extends StatelessWidget {
                   height: 500,
                   child: Scaffold(
                     backgroundColor: const Color.fromRGBO(0, 0, 0, 0),
-                    floatingActionButton: FloatingActionButton(
-                      onPressed: () {
-                        // Add your onPressed code here!
-                      },
-                      child: const Icon(Icons.add),
-                      backgroundColor: Colors.lightBlueAccent,
-                    ),
+                    floatingActionButton: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          FloatingActionButton(
+                            onPressed: () {
+                              // Add your onPressed code here!
+                            },
+                            child: const Icon(Icons.add_location),
+                            backgroundColor: Colors.lightBlueAccent,
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          FloatingActionButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => const SecondRoute()),
+                              );// Add your onPressed code here!
+                            },
+                            child: const Icon(Icons.addchart),
+                            backgroundColor: Colors.lightBlueAccent,
+                          ),
+                        ],
+                    )
                   ),
                 ),
               ],
             ),
 
-            const SizedBox(height: 10),
+            const SizedBox(height: 50),
             /**
              *
              * Add button to pages for development, if the navigation bar has not been developed.
@@ -187,12 +209,13 @@ class HomePage extends StatelessWidget {
               },
               child: const Text("Sign out"),
             ),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => ProfilePage(this.userInfo)),
+                      builder: (context) => ProfilePage(userInfo)),
                 );
               },
               child: const Text("Profile Page"),
@@ -201,7 +224,7 @@ class HomePage extends StatelessWidget {
         ),
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage("../assets/background.jpg"),
+            image: AssetImage("../assets/background_blur.jpg"),
             fit: BoxFit.cover,
           ),
         ),
@@ -211,87 +234,167 @@ class HomePage extends StatelessWidget {
   }
 }
 
-// /**
-//  * Favourite list
-//  */
-// class FavList extends StatelessWidget{
-//   const FavList({Key? key}) : super(key: key);
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return ListView.builder(
-//       itemCount: 100,
-//       itemExtent: 30,
-//       itemBuilder: ,
-//     );
-//   }
-// }
+/**
+ * Data Viusalisation
+ */
+class SecondRoute extends StatelessWidget {
+  const SecondRoute({Key? key}) : super(key: key);
 
-// /*
-// Logo area
-//  */
-// class LogoArea extends StatelessWidget {
-//   const LogoArea({Key? key}) : super(key: key);
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       child: Row(
-//         children: [
-//           Image.asset('../assets/haizea.png', fit: BoxFit.cover),
-//         ],
-//       ),
-//       height: 68.0,
-//       width: double.infinity,
-//     );
-//   }
-// }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Data Visualisation'),
+      ),
+      body: Container(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+           Container(
+             width: 600,
+             height: 300,
+             color: Color.fromRGBO(38, 38, 38, 0.4),
+             child:Text("viusalsation ",
+                 style: const TextStyle(
+                   fontWeight: FontWeight.bold,
+                   fontSize: 32.0,
+                   color: Colors.white,
+                 )),
+           ),
+           SizedBox(width:20),
+           Column(
+             mainAxisAlignment: MainAxisAlignment.center,
+             children: [
+               AxisDropDown(),
+               SizedBox(height: 100,),
+               FloatingActionButton(
+                 onPressed: () {},
+                 child: const Icon(Icons.download),
+                 backgroundColor: Colors.lightBlueAccent,
+               ),
+             ],
+           ),
+          ],
+        ),
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("../assets/background_blur.jpg"),
+            fit: BoxFit.cover,
+          ),
+        ),
+        width: double.infinity,
+      ),
+    );
+  }
+}
 
-// /*
-// Page information
-//  */
-// class PageInfo extends StatelessWidget {
-//   //const PageInfo({Key? key}) : super(key: key);
-//
-//   String lastLoginTime;
-//   String username = "";
-//
-//   PageInfo(this.lastLoginTime) {
-//     FirebaseFirestore.instance
-//         .collection(databaseName)
-//         .doc(userEmail)
-//         .get()
-//         .then((DocumentSnapshot documentSnapshot) {
-//       if (documentSnapshot.exists) {
-//         username = documentSnapshot.get("firstname");
-//         print(username);
-//       } else {
-//         print('Document does not exist on the database');
-//       }
-//     });
-//   }
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       child: Column(
-//         children: [
-//           Text("Welcome, " + username,
-//               style: const TextStyle(
-//                 fontWeight: FontWeight.bold,
-//                 fontSize: 54.0,
-//                 color: Colors.white,
-//               )),
-//           Text(
-//             "Last login: " + lastLoginTime,
-//             style: const TextStyle(
-//               color: Colors.white,
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
-//
+
+/*
+Logo area
+ */
+class LogoArea extends StatelessWidget {
+  const LogoArea({Key? key}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Row(
+        children: [
+          Image.asset('../assets/haizea.png', fit: BoxFit.cover),
+        ],
+      ),
+      height: 68.0,
+      width: double.infinity,
+    );
+  }
+}
+
+
+
+/*
+Page information
+ */
+class PageInfo extends StatelessWidget {
+  //const PageInfo({Key? key}) : super(key: key);
+
+  String lastLoginTime;
+  String username="";
+
+  PageInfo(this.lastLoginTime) {
+    FirebaseFirestore.instance
+        .collection(databaseName)
+        .doc(userEmail)
+        .get()
+        .then((DocumentSnapshot documentSnapshot) {
+      if (documentSnapshot.exists) {
+        username = documentSnapshot.get("firstname");
+        print(username);
+      } else {
+        print('Document does not exist on the database');
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text("Welcome to Haizea's ClimateStats! " + username,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 32.0,
+              color: Colors.white,
+            )),
+        Text(
+          "Last login: " + lastLoginTime,
+          style: const TextStyle(
+            color: Colors.white,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/**
+ * X&Y axis Dropdown Menue
+ */
+class AxisDropDown extends StatefulWidget {
+  const AxisDropDown({Key? key}) : super(key: key);
+
+  @override
+  State<AxisDropDown> createState() => _AxisDropDown();
+}
+
+class _AxisDropDown extends State<AxisDropDown> {
+  String dropdownValue = 'One';
+
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButton<String>(
+      value: dropdownValue,
+      icon: const Icon(Icons.arrow_downward),
+      elevation: 16,
+      style: const TextStyle(color: Colors.deepPurple),
+      underline: Container(
+        height: 2,
+        color: Colors.deepPurpleAccent,
+      ),
+      onChanged: (String? newValue) {
+        setState(() {
+          dropdownValue = newValue!;
+        });
+      },
+      items: <String>['One', 'Two', 'Free', 'Four']
+          .map<DropdownMenuItem<String>>((String value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(value),
+        );
+      }).toList(),
+    );
+  }
+}
+
 class OpenPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
