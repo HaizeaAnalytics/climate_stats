@@ -39,7 +39,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBar('Home'),
+      appBar: new TopAppBar("Home", userInfo),
       body: Container(
         child: Column(
           children: [
@@ -299,7 +299,7 @@ class LogoArea extends StatelessWidget {
     return Container(
       child: Row(
         children: [
-          Image.asset('../assets/haizea.png', fit: BoxFit.cover),
+         // Image.asset('../assets/haizea.png', fit: BoxFit.cover),
         ],
       ),
       height: 68.0,
