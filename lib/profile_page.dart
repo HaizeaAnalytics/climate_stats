@@ -20,7 +20,7 @@ class ProfilePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         // Navigation bar area
-        appBar: appBar('Profile'),
+        appBar: new TopAppBar("Profit", userInfo),
         body: Container(
           child: Column(
             children: [
@@ -49,7 +49,7 @@ class LogoArea extends StatelessWidget {
     return Container(
       child: Row(
         children: [
-          Image.asset('../assets/haizea.png', fit: BoxFit.cover),
+         // Image.asset('../assets/haizea.png', fit: BoxFit.cover),
         ],
       ),
       height: 68.0,
