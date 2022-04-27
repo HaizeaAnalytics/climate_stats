@@ -102,8 +102,8 @@ class _InputFieldsState extends State<InputFields> {
                           suffixIcon: GestureDetector(
                               onTap: _togglePasswordView,
                               child: Icon(_isHidden
-                                  ? Icons.visibility_off
-                                  : Icons.visibility)),
+                                  ? Icons.visibility
+                                  : Icons.visibility_off)),
                           hintText: 'Password',
                           filled: true,
                           fillColor: Colors.grey[300],
