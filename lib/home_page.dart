@@ -4,6 +4,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart' as latLng;
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:syncfusion_flutter_maps/maps.dart';
+import 'package:http/http.dart' as http;
+import 'package:cloud_functions/cloud_functions.dart';
 import 'profile_page.dart';
 
 import 'package:flutter/material.dart';
@@ -11,6 +14,8 @@ import 'package:provider/provider.dart';
 
 const String databaseName = "userInfo";
 String userEmail = "";
+ValueNotifier<String> _location = ValueNotifier<String>('');
+
 
 class HomePage extends StatelessWidget {
   // const HomePage({Key? key}) : super(key: key);
@@ -18,17 +23,6 @@ class HomePage extends StatelessWidget {
   User userInfo;
   String lastLoginTime = "";
 
-  List<String> favourites = [
-    '12 Swanston Street, Joel Joel',
-    '8 Lapko Road, Magtitup',
-    '10 Downing Street, London'
-  ];
-
-  List<String> items = <String>[
-    'Low',
-    'Medium',
-    'High',
-  ];
 
   HomePage(this.userInfo) {
 
@@ -44,33 +38,20 @@ class HomePage extends StatelessWidget {
         child: Column(
           children: [
             LogoArea(),
+
+
             PageInfo(this.lastLoginTime),
 
-            SizedBox(
-              height: 10,
-            ),
+            SizedBox(height: 10,),
 
-            /*************/
             Container(
               width: 500,
               height: 50,
-              child: TextField(
-                autofocus: true,
-                decoration: InputDecoration(
-                    // labelText: "Finds somewhere new.",
-                    // labelStyle: TextStyle(fontSize: 24),
-                    hintText: "Search",
-                    prefixIcon: Icon(Icons.search),
-                    filled: true,
-                    fillColor: Colors.grey[300],
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20.0),
-                        borderSide: const BorderSide(width: 0, style: BorderStyle.none)),
-                ),
-              ),
+              child: AutocompleteSearch(),
             ),
 
-            const SizedBox(height: 10),
+            SizedBox(height: 10),
+
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: const [
@@ -92,29 +73,7 @@ class HomePage extends StatelessWidget {
                 SizedBox(
                   width: 500,
                   height: 500,
-                  child: ListView.builder(
-                    itemCount: favourites.length,
-                    // itemExtent: 20.0,
-                    itemBuilder: (context, index){
-                      return Card(
-                        child: ListTile(
-                          title: TextButton(
-                            onPressed: () {},
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(favourites[index]),
-                              ],
-                            ),
-                          ),
-                          trailing: IconButton(
-                            icon:Icon(Icons.delete_forever),
-                            onPressed: (){},
-                          ),
-                        ),
-                      );
-                    }
-                  ),
+                  child: FavouriteList(),
                 ),
 
                 const SizedBox(width: 20),
@@ -122,46 +81,7 @@ class HomePage extends StatelessWidget {
                 SizedBox(
                   width: 500,
                   height: 500,
-                  child: FlutterMap(
-                    options: MapOptions(
-                      center: latLng.LatLng(-35.28,149.13),
-                      zoom: 14.0,
-                    ),
-                    layers: [
-                      MarkerLayerOptions(
-                        markers: [
-                          Marker(
-                            width: 40.0,
-                            height: 40.0,
-                            point: latLng.LatLng(-35.28,149.13),
-                            builder: (ctx) =>
-                                Container(
-                                  child:Image.asset('../assets/RoundIcon.png', fit: BoxFit.cover),
-                                ),
-                          ),
-                        ],
-                      ),
-                    ],
-                    children: <Widget>[
-                      TileLayerWidget(options: TileLayerOptions(
-                          urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                          subdomains: ['a', 'b', 'c']
-                      )),
-                      MarkerLayerWidget(options: MarkerLayerOptions(
-                        markers: [
-                          Marker(
-                            width: 40.0,
-                            height: 40.0,
-                            point: latLng.LatLng(-35.28,149.13),
-                            builder: (ctx) =>
-                                Container(
-                                  child:Image.asset('../assets/RoundIcon.png', fit: BoxFit.cover),
-                                ),
-                          ),
-                        ],
-                      )),
-                    ],
-                  ),
+                  child: MyMap(),
                 ),
                 SizedBox(
                   width: 50,
@@ -196,29 +116,6 @@ class HomePage extends StatelessWidget {
                   ),
                 ),
               ],
-            ),
-
-            const SizedBox(height: 50),
-            /**
-             *
-             * Add button to pages for development, if the navigation bar has not been developed.
-             */
-            ElevatedButton(
-              onPressed: () {
-                context.read<AuthenticationService>().signOut();
-              },
-              child: const Text("Sign out"),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => ProfilePage(userInfo)),
-                );
-              },
-              child: const Text("Profile Page"),
             ),
           ],
         ),
@@ -289,6 +186,217 @@ class SecondRoute extends StatelessWidget {
 }
 
 
+/**
+ * Favourite list
+ */
+class FavouriteList extends StatefulWidget {
+
+  @override
+  _FavouriteList createState() => _FavouriteList();
+}
+
+class _FavouriteList extends State<FavouriteList>{
+  List<String> favourites = [];
+
+  @override
+  void initState(){
+    super.initState();
+    getFavouriteList();
+  }
+  void getFavouriteList() async{
+
+    await FirebaseFirestore.instance.collection(databaseName).doc(userEmail).get().then((DocumentSnapshot document){
+        if(document.exists){
+          favourites=List.from(document.get("favourites"));
+        }
+    });
+    setState(() {
+
+    });
+
+  }
+  
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+        itemCount: favourites.length,
+        // itemExtent: 20.0,
+        itemBuilder: (context, index){
+          return Card(
+            child: ListTile(
+              title: TextButton(
+                onPressed: () {
+                  _location.value=favourites[index];
+                  print(_location.value);
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(favourites[index]),
+                  ],
+                ),
+              ),
+              trailing: IconButton(
+                icon:Icon(Icons.delete_forever),
+                onPressed: () async{
+                  CollectionReference user = FirebaseFirestore.instance.collection(databaseName);
+                  user.doc(userEmail).update({'favourites':FieldValue.arrayRemove([favourites[index]])});
+                  getFavouriteList();
+                },
+              ),
+            ),
+          );
+        }
+    );
+  }
+}
+
+/**
+ * autocomplete search
+ */
+class AutocompleteSearch extends StatelessWidget {
+
+  static const List<String> addressOptions = <String>[
+    'New South Wales',
+    'Queensland',
+    'Northern Territory',
+    'Victoria',
+    'South Australia',
+    'Western Australia',
+    'Tasmania',
+    'Australian Capital Territory',
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Autocomplete<String>(
+      optionsBuilder: (TextEditingValue textEditingValue) {
+        padding:
+        if (textEditingValue.text == '') {
+          return const Iterable<String>.empty();
+        }
+        return addressOptions.where((String option) {
+          return option.contains(textEditingValue.text.toUpperCase());
+        });
+      },
+      optionsViewBuilder: (context, onSelected, options) => Align(
+        alignment: Alignment.topLeft,
+        child: Material(
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top:Radius.circular(16.0),bottom: Radius.circular(16.0)),
+          ),
+          child: Container(
+            height: 52.0 * options.length,
+            width: 500 ,
+            child: ListView.builder(
+              padding: EdgeInsets.zero,
+              itemCount: options.length,
+              shrinkWrap: false,
+              itemBuilder: (BuildContext context, int index) {
+                final String option = options.elementAt(index);
+                return InkWell(
+                  onTap: () => onSelected(option),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(option),
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+      ),
+      fieldViewBuilder: (
+          BuildContext context,
+          TextEditingController fieldTextEditingController,
+          FocusNode fieldFocusNode,
+          VoidCallback onFieldSubmitted
+          ) {
+        return TextField(
+          controller: fieldTextEditingController,
+          focusNode: fieldFocusNode,
+          autofocus: true,
+          onSubmitted: (value){
+            _location.value = value;
+          },
+          decoration: InputDecoration(
+            hintText: "Search",
+            prefixIcon: Icon(Icons.search),
+            filled: true,
+            fillColor: Colors.grey[300],
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20.0),
+                borderSide: const BorderSide(width: 0, style: BorderStyle.none)),
+          ),
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        );
+      },
+      onSelected: (String selection) {
+        debugPrint('You just selected $selection');
+      },
+
+    );
+  }
+}
+
+// /**
+//  * Map
+//  */
+// class HomeMap extends StatefulWidget{
+//   const HomeMap({Key?key}) : super(key:key);
+//
+//   @override
+//   State<StatefulWidget> createState() => _HomeMap();
+// }
+//
+// class _HomeMap extends State<HomeMap>{
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return FlutterMap(
+//       options: MapOptions(
+//         center: latLng.LatLng(-35.28,149.13),
+//         zoom: 14.0,
+//       ),
+//       layers: [
+//         MarkerLayerOptions(
+//           markers: [
+//             Marker(
+//               width: 40.0,
+//               height: 40.0,
+//               point: latLng.LatLng(-35.28,149.13),
+//               builder: (ctx) =>
+//                   Container(
+//                     child:Image.asset('../assets/RoundIcon.png', fit: BoxFit.cover),
+//                   ),
+//             ),
+//           ],
+//         ),
+//       ],
+//       children: <Widget>[
+//         TileLayerWidget(options: TileLayerOptions(
+//             urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+//             subdomains: ['a', 'b', 'c']
+//         )),
+//         MarkerLayerWidget(options: MarkerLayerOptions(
+//           markers: [
+//             Marker(
+//               width: 40.0,
+//               height: 40.0,
+//               point: latLng.LatLng(-35.28,149.13),
+//               builder: (ctx) =>
+//                   Container(
+//                     child:Image.asset('../assets/RoundIcon.png', fit: BoxFit.cover),
+//                   ),
+//             ),
+//           ],
+//         )),
+//       ],
+//     );
+//   }
+//
+// }
+
 /*
 Logo area
  */
@@ -320,25 +428,13 @@ class PageInfo extends StatelessWidget {
   String username="";
 
   PageInfo(this.lastLoginTime) {
-    FirebaseFirestore.instance
-        .collection(databaseName)
-        .doc(userEmail)
-        .get()
-        .then((DocumentSnapshot documentSnapshot) {
-      if (documentSnapshot.exists) {
-        username = documentSnapshot.get("firstname");
-        print(username);
-      } else {
-        print('Document does not exist on the database');
-      }
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text("Welcome to Haizea's ClimateStats! " + username,
+        Text("Find somewhere new in ACT!",
             style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 32.0,
@@ -394,16 +490,130 @@ class _AxisDropDown extends State<AxisDropDown> {
     );
   }
 }
-
-class OpenPainter extends CustomPainter {
+/**
+ * Maps widget
+ */
+class MyMap extends StatefulWidget{
   @override
-  void paint(Canvas canvas, Size size) {
-    var paint1 = Paint()
-      ..color = Color.fromARGB(255, 242, 239, 241)
-      ..style = PaintingStyle.fill;
-    canvas.drawRect(Offset(80, 1) & const Size(500, 500), paint1);
+  State<MyMap> createState() => _MyMap();
+
+}
+
+class _MyMap extends State<MyMap> {
+  late List<Model> data;
+  late MapShapeSource _mapSource;
+  late MapZoomPanBehavior _zoomPanBehavior;
+  late String _selected;
+
+
+  @override
+  void initState() {
+    _location.addListener(() =>_selected = _location.value);
+    data = <Model>[
+      Model('New South Wales', Color.fromRGBO(255, 215, 0, 1.0).withOpacity(0.5),
+          '       New\nSouth Wales'),
+      Model('Queensland', Color.fromRGBO(72, 209, 204, 1.0).withOpacity(0.5), 'Queensland'),
+      Model('Northern Territory', Colors.red.withOpacity(0.5),
+          'Northern\nTerritory'),
+      Model('Victoria', Color.fromRGBO(171, 56, 224, 0.75).withOpacity(0.5), 'Victoria'),
+      Model('South Australia', Color.fromRGBO(126, 247, 74, 0.75).withOpacity(0.5),
+          'South Australia'),
+      Model('Western Australia', Color.fromRGBO(79, 60, 201, 0.7).withOpacity(0.5),
+          'Western Australia'),
+      Model('Tasmania', Color.fromRGBO(99, 164, 230, 1).withOpacity(0.5), 'Tasmania'),
+      Model('Australian Capital Territory', Colors.teal.withOpacity(0.5), 'ACT')
+    ];
+    _zoomPanBehavior = MapZoomPanBehavior(
+        maxZoomLevel: 4.1,
+        minZoomLevel: 4.1,
+        focalLatLng: MapLatLng(-27.9, 133.417),
+        enableDoubleTapZooming: false,
+    );
+
+    _mapSource = MapShapeSource.asset(
+      'australia.json',
+      shapeDataField: 'STATE_NAME',
+      dataCount: data.length,
+      primaryValueMapper: (int index) => data[index].state,
+      dataLabelMapper: (int index) => data[index].stateCode,
+      shapeColorValueMapper: (int index) => data[index].color,
+    );
+    super.initState();
   }
 
+  // void _update(String selected) {
+  //   _selected = selected;
+  //   data = <Model>[Model(_selected,Color.fromRGBO(99, 164, 230, 1),_selected)];
+  //   _mapSource = MapShapeSource.asset(
+  //       'Location.json',
+  //       shapeDataField: 'STATE_NAME',
+  //       dataCount: data.length,
+  //       primaryValueMapper: (int index) => data[index].state,
+  //       dataLabelMapper: (int index) => data[index].stateCode,
+  //       shapeColorValueMapper: (int index) => data[index].color,
+  //   );
+  //   setState(() {
+  //
+  //   });
+  // }
+
   @override
-  bool shouldRepaint(CustomPainter oldDelegate) => true;
+  Widget build(BuildContext context) {
+    final ThemeData themeData = Theme.of(context);
+    return Stack(
+      children: <Widget>[
+        SfMaps(
+          layers: <MapLayer>[
+            MapTileLayer(
+              urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+              zoomPanBehavior: _zoomPanBehavior,
+              markerBuilder: (BuildContext context, int index){
+                return MapMarker(
+                  latitude:  -24.250,
+                  longitude: 133.417,
+                  alignment: Alignment.bottomCenter,);
+              },
+            ),
+          ],
+        ),
+            SfMaps(
+              layers: <MapShapeLayer>[
+                MapShapeLayer(
+                  source: _mapSource,
+                  // legend: MapLegend(MapElement.shape),
+                  showDataLabels: true,
+                  shapeTooltipBuilder: (BuildContext context, int index) {
+                      return Padding(
+                      padding: EdgeInsets.all(data.length.toDouble()),
+                      child: Text(data[index].stateCode,
+                      style: themeData.textTheme.caption!.copyWith(color: themeData.colorScheme.surface)),
+                      );
+                  },
+                  tooltipSettings: MapTooltipSettings(
+                  color: Colors.grey[700],
+                  strokeColor: Colors.white,
+                  strokeWidth: 2),
+                  strokeColor: Colors.white,
+                  strokeWidth: 0.5,
+                  dataLabelSettings: MapDataLabelSettings(
+                  textStyle: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: themeData.textTheme.caption!.fontSize)),
+                ),
+              ],
+            ),
+      ],
+    );
+  }
 }
+class Model {
+  Model(this.state, this.color, this.stateCode);
+
+  String state;
+  Color color;
+  String stateCode;
+}
+
+
+
