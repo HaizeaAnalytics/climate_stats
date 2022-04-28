@@ -1,12 +1,12 @@
 import 'package:climate_stats/authentication_service.dart';
 import 'package:climate_stats/reset_password.dart';
-import 'package:climate_stats/sign_up_page.dart';
+import 'package:climate_stats/sign_in_page.dart';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class SignInPage extends StatelessWidget {
-  const SignInPage({Key? key}) : super(key: key);
+class SignUpPage extends StatelessWidget {
+  const SignUpPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -44,6 +44,8 @@ class _InputFieldsState extends State<InputFields> {
         colorFilter:
             ColorFilter.mode(Colors.black.withAlpha(100), BlendMode.darken),
       )),
+
+      // Sign up form
       child: Form(
         key: _formKey,
         child: Center(
@@ -52,25 +54,18 @@ class _InputFieldsState extends State<InputFields> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                // Logo
-                Image.asset("haizea.png", scale: 3.2),
-                const SizedBox(
-                  height: 50,
+                // Heading text
+                const Text(
+                  "Sign up for an account",
+                  style: TextStyle(color: Colors.white),
                 ),
-                const Text("Welcome to Haizea Climate Statistics.",
-                    textScaleFactor: 2.5,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    )),
-                const SizedBox(
-                  height: 50,
-                ),
-                // Email Field
+
+                // Sized box (defines width of child text fields)
                 SizedBox(
                   width: 500,
                   child: Column(
                     children: [
+                      // Email Field
                       TextFormField(
                         controller: emailController,
                         decoration: InputDecoration(
@@ -90,9 +85,12 @@ class _InputFieldsState extends State<InputFields> {
                           return null;
                         },
                       ),
+
+                      // Sized box for spacing
                       const SizedBox(
                         height: 10,
                       ),
+
                       // Password Field
                       TextFormField(
                         obscureText: _isHidden,
@@ -122,7 +120,8 @@ class _InputFieldsState extends State<InputFields> {
                     ],
                   ),
                 ),
-                // Sign in (submit) button
+
+                // Sign up (submit) button
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: ElevatedButton(
@@ -134,55 +133,20 @@ class _InputFieldsState extends State<InputFields> {
                       // Validate will return true if the form is valid,
                       // or false if the form is invalid
                       if (_formKey.currentState!.validate()) {
-                        // Sign the user in
-                        context.read<AuthenticationService>().signIn(
-                            email: emailController.text.trim(),
-                            password: passwordController.text.trim());
+                        // Sign the user up (create user account)
+                        context
+                            .read<AuthenticationService>()
+                            .signUp(
+                                email: emailController.text.trim(),
+                                password: passwordController.text.trim())
+                            .then((value) => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const SignInPage()),
+                                ));
                       }
                     },
-                    child: const Text('Log in'),
-                  ),
-                ),
-
-                // Other buttons
-                Container(
-                  width: 300,
-                  color: Colors.black.withAlpha(200),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      // Sign up button
-                      TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const SignUpPage()),
-                          );
-                        },
-                        child: const Text('First time? Sign up!',
-                            style: TextStyle(
-                              color: Colors.white,
-                              decoration: TextDecoration.underline,
-                            )),
-                      ),
-
-                      // Forgot password button
-                      TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const ResetPassword()),
-                          );
-                        },
-                        child: const Text('Forgot Password?',
-                            style: TextStyle(
-                              color: Colors.white,
-                              decoration: TextDecoration.underline,
-                            )),
-                      ),
-                    ],
+                    child: const Text('Sign Up'),
                   ),
                 ),
               ],
