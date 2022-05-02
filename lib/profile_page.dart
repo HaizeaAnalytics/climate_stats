@@ -1,18 +1,19 @@
 import 'package:climate_stats/app_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 const String databaseName = "userInfo";
-String userEmail = "";
+String userUid = "";
+String lastUsername = "";
+String lastPassword = "";
 
 class ProfilePage extends StatelessWidget {
   //const ProfilePage({Key? key}) : super(key: key);
   User userInfo;
   String lastLoginTime = "";
   ProfilePage(this.userInfo) {
-    userEmail = userInfo.email.toString();
+    userUid = userInfo.uid.toString();
     lastLoginTime = userInfo.metadata.lastSignInTime!.toLocal().toString();
     print(lastLoginTime);
   }
@@ -49,7 +50,7 @@ class LogoArea extends StatelessWidget {
     return Container(
       child: Row(
         children: [
-         // Image.asset('../assets/haizea.png', fit: BoxFit.cover),
+          // Image.asset('../assets/haizea.png', fit: BoxFit.cover),
         ],
       ),
       height: 68.0,
@@ -99,6 +100,12 @@ class AccountInfoFields extends StatefulWidget {
 
 class _AccountInfoFieldsState extends State<AccountInfoFields> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  // Password Visibility
+  bool _isHidden = true;
+
+  // update user account in auth
+  FirebaseAuth auth = FirebaseAuth.instance;
+  User? currentUser = FirebaseAuth.instance.currentUser;
 
   // Initialise controllers for text fields
   TextEditingController firstNameController = TextEditingController();
@@ -110,7 +117,7 @@ class _AccountInfoFieldsState extends State<AccountInfoFields> {
   _AccountInfoFieldsState() {
     FirebaseFirestore.instance
         .collection(databaseName)
-        .doc(userEmail)
+        .doc(userUid)
         .get()
         .then((DocumentSnapshot documentSnapshot) {
       if (documentSnapshot.exists) {
@@ -124,9 +131,19 @@ class _AccountInfoFieldsState extends State<AccountInfoFields> {
             TextEditingValue(text: documentSnapshot.get("phone"));
         emailController.value =
             TextEditingValue(text: documentSnapshot.get("email"));
+
+        lastUsername = documentSnapshot.get("email");
+        lastPassword = documentSnapshot.get("password");
       } else {
         print('Document does not exist on the database');
       }
+    });
+  }
+
+  // Password Visibility
+  void _togglePasswordView() {
+    setState(() {
+      _isHidden = !_isHidden;
     });
   }
 
@@ -211,10 +228,14 @@ class _AccountInfoFieldsState extends State<AccountInfoFields> {
                     color: Colors.white,
                   )),
               TextFormField(
-                obscureText: true,
+                obscureText: _isHidden,
                 controller: passwordController,
                 decoration: InputDecoration(
                   prefixIcon: const Icon(Icons.lock_outline_rounded),
+                  suffixIcon: GestureDetector(
+                      onTap: _togglePasswordView,
+                      child: Icon(
+                          _isHidden ? Icons.visibility : Icons.visibility_off)),
                   hintText: 'Password',
                   filled: true,
                   fillColor: Colors.white,
@@ -292,7 +313,7 @@ class _AccountInfoFieldsState extends State<AccountInfoFields> {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
                 child: ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     // Validate will return true if the form is valid,
                     // or false if the form is invalid
                     if (_formKey.currentState!.validate()) {
@@ -302,7 +323,7 @@ class _AccountInfoFieldsState extends State<AccountInfoFields> {
 
                       //Future<void> updateUser() {
                       users
-                          .doc(userEmail)
+                          .doc(userUid)
                           .update({
                             'firstname': firstNameController.text.trim(),
                             'lastname': lastNameController.text.trim(),
@@ -314,6 +335,23 @@ class _AccountInfoFieldsState extends State<AccountInfoFields> {
                           .catchError((error) =>
                               print("Failed to update user: $error"));
                       //}
+
+                      //update email and password in auth page at the same time
+                      if (lastUsername != emailController.text.trim() &&
+                          lastPassword != passwordController.text.trim()) {
+                        currentUser
+                            ?.updateEmail(emailController.text.trim())
+                            .then((value) => currentUser?.updatePassword(
+                                passwordController.text.trim()));
+                      } else if (lastUsername != emailController.text.trim()) {
+                        currentUser
+                            ?.updateEmail(emailController.text.trim())
+                            .then((value) => null);
+                      } else if (lastPassword !=
+                          passwordController.text.trim()) {
+                        currentUser
+                            ?.updatePassword(passwordController.text.trim());
+                      }
                     }
                   },
                   child: const Text("Save details"),
@@ -327,6 +365,9 @@ class _AccountInfoFieldsState extends State<AccountInfoFields> {
   }
 }
 
+/**
+ * pop the dialog to back the last page
+ */
 _showDialog(BuildContext context) {
   return showDialog(
       context: context,
@@ -337,6 +378,7 @@ _showDialog(BuildContext context) {
             FlatButton(
               child: const Text("Back"),
               onPressed: () {
+                Navigator.pop(context);
                 Navigator.pop(context);
               },
             ),
