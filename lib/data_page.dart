@@ -21,12 +21,24 @@ class DataPage extends StatelessWidget {
             children: [
               LogoArea(),
               SearchBar(),
-              Address(),
-              Button(),
-              VariableDropDown(),
-              LineChartWidget()
+              SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                Address(),
+                Button(),
+                VariableDropDown(),
+                VariableDropDown()
+              ]),
+              SizedBox(height: 30),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                LineChartWidget(),
+              ],)
+              
             ]
-          ),
+          ),         
           decoration: const BoxDecoration(
             image: DecorationImage(
               image: AssetImage("../assets/background.jpg"),
@@ -62,13 +74,13 @@ class SearchBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
               width: 400,
-              height: 50,
+              height: 75,
               child: TextField(
                 autofocus: true,
                 decoration: InputDecoration(
                     // labelText: "Finds somewhere new.",
                     // labelStyle: TextStyle(fontSize: 24),
-                    hintText: "Search",
+                    hintText: "Search Address",
                     prefixIcon: Icon(Icons.search),
                     filled: true,
                     fillColor: Colors.grey[300],
@@ -83,12 +95,13 @@ class SearchBar extends StatelessWidget {
 }
 
 
-// Address Text
+//Address Text
 class Address extends StatelessWidget {
   const Address({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Container(
+         width: 300,
          child: const Text("47 McGregor Street, Menindee",
               style: TextStyle(
                 fontWeight: FontWeight.bold,
@@ -100,13 +113,16 @@ class Address extends StatelessWidget {
   }
 }
 
-// Add to Favourites button
+
+// Add to Favourites Button
 class Button extends StatelessWidget{
   const Button({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: 150,
+      height: 50,
       child: ElevatedButton(
         onPressed: () {
           print("Clicked");
@@ -114,9 +130,9 @@ class Button extends StatelessWidget{
         child: const Text('Add to Favourties'),
         style: ElevatedButton.styleFrom(
           primary: Colors.blue,
-          padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
           textStyle: TextStyle(
-         fontSize: 12,
+         fontSize: 14,
         fontWeight: FontWeight.bold)),
 
         )
@@ -126,7 +142,6 @@ class Button extends StatelessWidget{
   }
 }
 
-// Axis Variables Dropdown Menus
 class VariableDropDown extends StatefulWidget {
   const VariableDropDown({Key? key}) : super(key: key);
 
@@ -134,6 +149,8 @@ class VariableDropDown extends StatefulWidget {
   State<VariableDropDown> createState() => _VariableDropDown();
 }
 
+
+// Axis Variable Dropdown Menus
 class _VariableDropDown extends State<VariableDropDown> {
 
   final items = ['Apple', 'Orange', 'Banana', 'Pear'];
@@ -142,7 +159,7 @@ class _VariableDropDown extends State<VariableDropDown> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 75,
+      height: 50,
       width: 150,
       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       decoration: BoxDecoration(
@@ -184,8 +201,8 @@ class LineChartWidget extends StatelessWidget {
   ];
   @override
   Widget build(BuildContext context) => SizedBox(
-    width: 400,
-    height: 400,
+    width: 500,
+    height: 500,
    child: LineChart(
     LineChartData(
       backgroundColor: Color(0xff23b636),
