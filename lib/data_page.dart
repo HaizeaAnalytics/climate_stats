@@ -11,6 +11,7 @@ class DataPage extends StatelessWidget {
   const DataPage({Key? key}) : super(key:key);
 
 
+// Layout of the data page
 @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,6 +37,7 @@ class DataPage extends StatelessWidget {
   }
 }
 
+// Hazeia Logo
 class LogoArea extends StatelessWidget {
   const LogoArea({Key? key}) : super(key: key);
   @override
@@ -52,6 +54,8 @@ class LogoArea extends StatelessWidget {
   }
 }
 
+
+// Search Bar
 class SearchBar extends StatelessWidget {
   const SearchBar({Key? key}) : super(key: key);
 
@@ -78,6 +82,8 @@ class SearchBar extends StatelessWidget {
   }
 }
 
+
+// Address Text
 class Address extends StatelessWidget {
   const Address({Key? key}) : super(key: key);
   @override
@@ -94,6 +100,7 @@ class Address extends StatelessWidget {
   }
 }
 
+// Add to Favourites button
 class Button extends StatelessWidget{
   const Button({Key? key}) : super(key: key);
 
@@ -119,6 +126,7 @@ class Button extends StatelessWidget{
   }
 }
 
+// Axis Variables Dropdown Menus
 class VariableDropDown extends StatefulWidget {
   const VariableDropDown({Key? key}) : super(key: key);
 
@@ -167,6 +175,8 @@ DropdownMenuItem<String> buildMenuItem(String item) =>
   );
 }
 
+
+// Line Chart Graph
 class LineChartWidget extends StatelessWidget {
   final List<Color> gradientColors = [
     const Color(0xff23b636),
