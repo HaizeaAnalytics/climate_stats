@@ -1,24 +1,23 @@
+import 'dart:convert';
+import 'globals.dart';
 import 'package:climate_stats/authentication_service.dart';
 import 'package:climate_stats/app_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart' as latLng;
+import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:syncfusion_flutter_maps/maps.dart';
 import 'package:http/http.dart' as http;
 import 'package:cloud_functions/cloud_functions.dart';
-import 'profile_page.dart';
+import 'maps.dart';
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 const String databaseName = "userInfo";
 String userEmail = "";
-ValueNotifier<String> _location = ValueNotifier<String>('');
+
 
 
 class HomePage extends StatelessWidget {
-  // const HomePage({Key? key}) : super(key: key);
 
   User userInfo;
   String lastLoginTime = "";
@@ -81,40 +80,40 @@ class HomePage extends StatelessWidget {
                 SizedBox(
                   width: 500,
                   height: 500,
-                  child: MyMap(),
+                  child:Maps(),
                 ),
-                SizedBox(
-                  width: 50,
-                  height: 500,
-                  child: Scaffold(
-                    backgroundColor: const Color.fromRGBO(0, 0, 0, 0),
-                    floatingActionButton: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          FloatingActionButton(
-                            onPressed: () {
-                              // Add your onPressed code here!
-                            },
-                            child: const Icon(Icons.add_location),
-                            backgroundColor: Colors.lightBlueAccent,
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          FloatingActionButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => const SecondRoute()),
-                              );// Add your onPressed code here!
-                            },
-                            child: const Icon(Icons.addchart),
-                            backgroundColor: Colors.lightBlueAccent,
-                          ),
-                        ],
-                    )
-                  ),
-                ),
+                // SizedBox(
+                //   width: 50,
+                //   height: 500,
+                //   child: Scaffold(
+                //     backgroundColor: const Color.fromRGBO(0, 0, 0, 0),
+                //     floatingActionButton: Column(
+                //       mainAxisAlignment: MainAxisAlignment.end,
+                //         children: [
+                //           FloatingActionButton(
+                //             onPressed: () {
+                //               // Add your onPressed code here!
+                //             },
+                //             child: const Icon(Icons.add_location),
+                //             backgroundColor: Colors.lightBlueAccent,
+                //           ),
+                //           const SizedBox(
+                //             height: 10,
+                //           ),
+                //           FloatingActionButton(
+                //             onPressed: () {
+                //               Navigator.push(
+                //                 context,
+                //                 MaterialPageRoute(builder: (context) => const SecondRoute()),
+                //               );// Add your onPressed code here!
+                //             },
+                //             child: const Icon(Icons.addchart),
+                //             backgroundColor: Colors.lightBlueAccent,
+                //           ),
+                //         ],
+                //     )
+                //   ),
+                // ),
               ],
             ),
           ],
@@ -226,8 +225,7 @@ class _FavouriteList extends State<FavouriteList>{
             child: ListTile(
               title: TextButton(
                 onPressed: () {
-                  _location.value=favourites[index];
-                  print(_location.value);
+                  Globals.ssssadress.value = favourites[index];
                 },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -254,31 +252,48 @@ class _FavouriteList extends State<FavouriteList>{
 /**
  * autocomplete search
  */
-class AutocompleteSearch extends StatelessWidget {
+class AutocompleteSearch extends StatefulWidget {
+  const AutocompleteSearch({Key? key}) : super(key: key);
 
-  static const List<String> addressOptions = <String>[
-    'New South Wales',
-    'Queensland',
-    'Northern Territory',
-    'Victoria',
-    'South Australia',
-    'Western Australia',
-    'Tasmania',
-    'Australian Capital Territory',
-  ];
+  @override
+  _AutocompleteSearch createState() => _AutocompleteSearch();
+}
+
+class _AutocompleteSearch extends State<AutocompleteSearch> {
+
+  List<String> addressOptions = <String>[];
+
+
+  Future<void> loadJson() async {
+    final String data = await rootBundle.loadString('assets/Address.json');
+    final jsonResult = await json.decode(data);
+    setState((){
+      addressOptions = List<String>.from(jsonResult['address']);
+    });
+  }
+
+  @override
+  void initState() {
+    loadJson();
+    super.initState();
+  }
+
+  static String _displayStringForOption(String string) => string;
 
   @override
   Widget build(BuildContext context) {
     return Autocomplete<String>(
+      displayStringForOption: _displayStringForOption,
       optionsBuilder: (TextEditingValue textEditingValue) {
         padding:
         if (textEditingValue.text == '') {
           return const Iterable<String>.empty();
         }
         return addressOptions.where((String option) {
-          return option.contains(textEditingValue.text.toUpperCase());
+          return option.toLowerCase().contains(textEditingValue.text.toLowerCase());
         });
       },
+
       optionsViewBuilder: (context, onSelected, options) => Align(
         alignment: Alignment.topLeft,
         child: Material(
@@ -312,12 +327,15 @@ class AutocompleteSearch extends StatelessWidget {
           FocusNode fieldFocusNode,
           VoidCallback onFieldSubmitted
           ) {
-        return TextField(
+        return TextFormField(
           controller: fieldTextEditingController,
           focusNode: fieldFocusNode,
           autofocus: true,
-          onSubmitted: (value){
-            _location.value = value;
+          onFieldSubmitted: (String value) {
+            // Globals.ssssadress = ValueNotifier<String>(value);
+            Globals.ssssadress.value = value;
+            onFieldSubmitted();
+            print('You just typed a new entry  $value');
           },
           decoration: InputDecoration(
             hintText: "Search",
@@ -332,9 +350,8 @@ class AutocompleteSearch extends StatelessWidget {
         );
       },
       onSelected: (String selection) {
-        debugPrint('You just selected $selection');
+        debugPrint('You just selected ${_displayStringForOption(selection)}');
       },
-
     );
   }
 }
@@ -490,130 +507,130 @@ class _AxisDropDown extends State<AxisDropDown> {
     );
   }
 }
-/**
- * Maps widget
- */
-class MyMap extends StatefulWidget{
-  @override
-  State<MyMap> createState() => _MyMap();
-
-}
-
-class _MyMap extends State<MyMap> {
-  late List<Model> data;
-  late MapShapeSource _mapSource;
-  late MapZoomPanBehavior _zoomPanBehavior;
-  late String _selected;
-
-
-  @override
-  void initState() {
-    _location.addListener(() =>_selected = _location.value);
-    data = <Model>[
-      Model('New South Wales', Color.fromRGBO(255, 215, 0, 1.0).withOpacity(0.5),
-          '       New\nSouth Wales'),
-      Model('Queensland', Color.fromRGBO(72, 209, 204, 1.0).withOpacity(0.5), 'Queensland'),
-      Model('Northern Territory', Colors.red.withOpacity(0.5),
-          'Northern\nTerritory'),
-      Model('Victoria', Color.fromRGBO(171, 56, 224, 0.75).withOpacity(0.5), 'Victoria'),
-      Model('South Australia', Color.fromRGBO(126, 247, 74, 0.75).withOpacity(0.5),
-          'South Australia'),
-      Model('Western Australia', Color.fromRGBO(79, 60, 201, 0.7).withOpacity(0.5),
-          'Western Australia'),
-      Model('Tasmania', Color.fromRGBO(99, 164, 230, 1).withOpacity(0.5), 'Tasmania'),
-      Model('Australian Capital Territory', Colors.teal.withOpacity(0.5), 'ACT')
-    ];
-    _zoomPanBehavior = MapZoomPanBehavior(
-        maxZoomLevel: 4.1,
-        minZoomLevel: 4.1,
-        focalLatLng: MapLatLng(-27.9, 133.417),
-        enableDoubleTapZooming: false,
-    );
-
-    _mapSource = MapShapeSource.asset(
-      'australia.json',
-      shapeDataField: 'STATE_NAME',
-      dataCount: data.length,
-      primaryValueMapper: (int index) => data[index].state,
-      dataLabelMapper: (int index) => data[index].stateCode,
-      shapeColorValueMapper: (int index) => data[index].color,
-    );
-    super.initState();
-  }
-
-  // void _update(String selected) {
-  //   _selected = selected;
-  //   data = <Model>[Model(_selected,Color.fromRGBO(99, 164, 230, 1),_selected)];
-  //   _mapSource = MapShapeSource.asset(
-  //       'Location.json',
-  //       shapeDataField: 'STATE_NAME',
-  //       dataCount: data.length,
-  //       primaryValueMapper: (int index) => data[index].state,
-  //       dataLabelMapper: (int index) => data[index].stateCode,
-  //       shapeColorValueMapper: (int index) => data[index].color,
-  //   );
-  //   setState(() {
-  //
-  //   });
-  // }
-
-  @override
-  Widget build(BuildContext context) {
-    final ThemeData themeData = Theme.of(context);
-    return Stack(
-      children: <Widget>[
-        SfMaps(
-          layers: <MapLayer>[
-            MapTileLayer(
-              urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-              zoomPanBehavior: _zoomPanBehavior,
-              markerBuilder: (BuildContext context, int index){
-                return MapMarker(
-                  latitude:  -24.250,
-                  longitude: 133.417,
-                  alignment: Alignment.bottomCenter,);
-              },
-            ),
-          ],
-        ),
-            SfMaps(
-              layers: <MapShapeLayer>[
-                MapShapeLayer(
-                  source: _mapSource,
-                  // legend: MapLegend(MapElement.shape),
-                  showDataLabels: true,
-                  shapeTooltipBuilder: (BuildContext context, int index) {
-                      return Padding(
-                      padding: EdgeInsets.all(data.length.toDouble()),
-                      child: Text(data[index].stateCode,
-                      style: themeData.textTheme.caption!.copyWith(color: themeData.colorScheme.surface)),
-                      );
-                  },
-                  tooltipSettings: MapTooltipSettings(
-                  color: Colors.grey[700],
-                  strokeColor: Colors.white,
-                  strokeWidth: 2),
-                  strokeColor: Colors.white,
-                  strokeWidth: 0.5,
-                  dataLabelSettings: MapDataLabelSettings(
-                  textStyle: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: themeData.textTheme.caption!.fontSize)),
-                ),
-              ],
-            ),
-      ],
-    );
-  }
-}
-class Model {
-  Model(this.state, this.color, this.stateCode);
-
-  String state;
-  Color color;
-  String stateCode;
-}
+// /**
+//  * Maps widget
+//  */
+// class MyMap extends StatefulWidget{
+//   @override
+//   State<MyMap> createState() => _MyMap();
+//
+// }
+//
+// class _MyMap extends State<MyMap> {
+//   late List<Model> data;
+//   late MapShapeSource _mapSource;
+//   late MapZoomPanBehavior _zoomPanBehavior;
+//   late String _selected;
+//
+//
+//   @override
+//   void initState() {
+//     _location.addListener(() =>_selected = _location.value);
+//     data = <Model>[
+//       Model('New South Wales', Color.fromRGBO(255, 215, 0, 1.0).withOpacity(0.5),
+//           '       New\nSouth Wales'),
+//       Model('Queensland', Color.fromRGBO(72, 209, 204, 1.0).withOpacity(0.5), 'Queensland'),
+//       Model('Northern Territory', Colors.red.withOpacity(0.5),
+//           'Northern\nTerritory'),
+//       Model('Victoria', Color.fromRGBO(171, 56, 224, 0.75).withOpacity(0.5), 'Victoria'),
+//       Model('South Australia', Color.fromRGBO(126, 247, 74, 0.75).withOpacity(0.5),
+//           'South Australia'),
+//       Model('Western Australia', Color.fromRGBO(79, 60, 201, 0.7).withOpacity(0.5),
+//           'Western Australia'),
+//       Model('Tasmania', Color.fromRGBO(99, 164, 230, 1).withOpacity(0.5), 'Tasmania'),
+//       Model('Australian Capital Territory', Colors.teal.withOpacity(0.5), 'ACT')
+//     ];
+//     _zoomPanBehavior = MapZoomPanBehavior(
+//         maxZoomLevel: 4.1,
+//         minZoomLevel: 4.1,
+//         focalLatLng: MapLatLng(-27.9, 133.417),
+//         enableDoubleTapZooming: false,
+//     );
+//
+//     _mapSource = MapShapeSource.asset(
+//       'australia.json',
+//       shapeDataField: 'STATE_NAME',
+//       dataCount: data.length,
+//       primaryValueMapper: (int index) => data[index].state,
+//       dataLabelMapper: (int index) => data[index].stateCode,
+//       shapeColorValueMapper: (int index) => data[index].color,
+//     );
+//     super.initState();
+//   }
+//
+//   // void _update(String selected) {
+//   //   _selected = selected;
+//   //   data = <Model>[Model(_selected,Color.fromRGBO(99, 164, 230, 1),_selected)];
+//   //   _mapSource = MapShapeSource.asset(
+//   //       'Charnwood.json',
+//   //       shapeDataField: 'STATE_NAME',
+//   //       dataCount: data.length,
+//   //       primaryValueMapper: (int index) => data[index].state,
+//   //       dataLabelMapper: (int index) => data[index].stateCode,
+//   //       shapeColorValueMapper: (int index) => data[index].color,
+//   //   );
+//   //   setState(() {
+//   //
+//   //   });
+//   // }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     final ThemeData themeData = Theme.of(context);
+//     return Stack(
+//       children: <Widget>[
+//         SfMaps(
+//           layers: <MapLayer>[
+//             MapTileLayer(
+//               urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+//               zoomPanBehavior: _zoomPanBehavior,
+//               markerBuilder: (BuildContext context, int index){
+//                 return MapMarker(
+//                   latitude:  -24.250,
+//                   longitude: 133.417,
+//                   alignment: Alignment.bottomCenter,);
+//               },
+//             ),
+//           ],
+//         ),
+//             SfMaps(
+//               layers: <MapShapeLayer>[
+//                 MapShapeLayer(
+//                   source: _mapSource,
+//                   // legend: MapLegend(MapElement.shape),
+//                   showDataLabels: true,
+//                   shapeTooltipBuilder: (BuildContext context, int index) {
+//                       return Padding(
+//                       padding: EdgeInsets.all(data.length.toDouble()),
+//                       child: Text(data[index].stateCode,
+//                       style: themeData.textTheme.caption!.copyWith(color: themeData.colorScheme.surface)),
+//                       );
+//                   },
+//                   tooltipSettings: MapTooltipSettings(
+//                   color: Colors.grey[700],
+//                   strokeColor: Colors.white,
+//                   strokeWidth: 2),
+//                   strokeColor: Colors.white,
+//                   strokeWidth: 0.5,
+//                   dataLabelSettings: MapDataLabelSettings(
+//                   textStyle: TextStyle(
+//                   color: Colors.white,
+//                   fontWeight: FontWeight.bold,
+//                   fontSize: themeData.textTheme.caption!.fontSize)),
+//                 ),
+//               ],
+//             ),
+//       ],
+//     );
+//   }
+// }
+// class Model {
+//   Model(this.state, this.color, this.stateCode);
+//
+//   String state;
+//   Color color;
+//   String stateCode;
+// }
 
 
 
