@@ -1,7 +1,7 @@
 import 'package:climate_stats/authentication_service.dart';
 import 'package:climate_stats/reset_password.dart';
 import 'package:climate_stats/sign_up_page.dart';
-
+import 'package:climate_stats/reusable/input_style.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -78,10 +78,7 @@ class _InputFieldsState extends State<InputFields> {
                           hintText: 'Email',
                           filled: true,
                           fillColor: Colors.grey[300],
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(20.0),
-                              borderSide: const BorderSide(
-                                  width: 0, style: BorderStyle.none)),
+                          border: InputStyle,
                         ),
                         validator: (String? value) {
                           if (value == null || value.isEmpty) {
@@ -107,10 +104,7 @@ class _InputFieldsState extends State<InputFields> {
                           hintText: 'Password',
                           filled: true,
                           fillColor: Colors.grey[300],
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(20.0),
-                              borderSide: const BorderSide(
-                                  width: 0, style: BorderStyle.none)),
+                          border: InputStyle,
                         ),
                         validator: (String? value) {
                           if (value == null || value.isEmpty) {

@@ -48,6 +48,8 @@ dependencies:
 
   syncfusion_flutter_maps: ^20.1.51
 
+  flutter_pw_validator: ^1.4.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
