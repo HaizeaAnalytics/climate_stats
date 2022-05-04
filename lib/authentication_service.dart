@@ -23,7 +23,7 @@ class AuthenticationService {
     }
   }
 
-  Future<User?> signUp(
+  Future<String?> signUp(
       {required String email,
       required String password,
       required String firstName,
@@ -44,31 +44,12 @@ class AuthenticationService {
           'phoneNumber': phoneNumber,
           'favourites': {}
         });
-        return user;
+        return "Signed up!";
       } else {
         throw Error();
       }
     } on FirebaseAuthException catch (e) {
-      print(e);
-      return null;
+      return e.message;
     }
-  }
-
-  Future<void> addUser(uid, email, firstName, lastName, phoneNumber) {
-    CollectionReference users =
-        FirebaseFirestore.instance.collection('userInfo');
-    // Call the user's CollectionReference to add a new user
-    return users
-        .doc(uid)
-        .set({
-          'email': email,
-          'firstName': firstName, // John Doe
-          'lastName': lastName, // Stokes and Sons
-          'phoneNumber': phoneNumber, // 42
-
-          'favourite': {}
-        })
-        .then((value) => print("User Added"))
-        .catchError((error) => print("Failed to add user: $error"));
   }
 }
