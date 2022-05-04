@@ -4,6 +4,7 @@ import 'package:climate_stats/sign_in_page.dart';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_pw_validator/flutter_pw_validator.dart';
 
 class SignUpPage extends StatelessWidget {
   const SignUpPage({Key? key}) : super(key: key);
@@ -28,6 +29,9 @@ class _InputFieldsState extends State<InputFields> {
 
   // Password Visibility
   bool _isHidden = true;
+
+  // Password Validation
+  bool _isValid = false;
 
   // Initialise controllers for text fields
   final TextEditingController emailController = TextEditingController();
@@ -117,6 +121,26 @@ class _InputFieldsState extends State<InputFields> {
                           return null;
                         },
                       ),
+                      // Sized box for spacing
+                      const SizedBox(
+                        height: 30,
+                      ),
+                      FlutterPwValidator(
+                        controller: passwordController,
+                        minLength: 6,
+                        uppercaseCharCount: 1,
+                        specialCharCount: 1,
+                        width: 400,
+                        height: 150,
+                        onSuccess: () {
+                          print("MATCHED");
+                          _setValid(true);
+                        },
+                        onFail: () {
+                          print("NOT MATCHED");
+                          _setValid(false);
+                        },
+                      ),
                     ],
                   ),
                 ),
@@ -132,19 +156,21 @@ class _InputFieldsState extends State<InputFields> {
                     onPressed: () {
                       // Validate will return true if the form is valid,
                       // or false if the form is invalid
-                      if (_formKey.currentState!.validate()) {
-                        // Sign the user up (create user account)
-                        context
-                            .read<AuthenticationService>()
-                            .signUp(
-                                email: emailController.text.trim(),
-                                password: passwordController.text.trim())
-                            .then((value) => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => const SignInPage()),
-                                ));
-                      }
+                      (_formKey.currentState!.validate() && _isValid)
+                          ?
+                          // Sign the user up (create user account)
+                          context
+                              .read<AuthenticationService>()
+                              .signUp(
+                                  email: emailController.text.trim(),
+                                  password: passwordController.text.trim())
+                              .then((value) => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const SignInPage()),
+                                  ))
+                          : null;
                     },
                     child: const Text('Sign Up'),
                   ),
@@ -161,6 +187,12 @@ class _InputFieldsState extends State<InputFields> {
   void _togglePasswordView() {
     setState(() {
       _isHidden = !_isHidden;
+    });
+  }
+
+  void _setValid(bool set) {
+    setState(() {
+      _isValid = set;
     });
   }
 }
