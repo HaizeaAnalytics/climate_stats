@@ -1,8 +1,11 @@
 import 'package:climate_stats/authentication_service.dart';
 import 'package:climate_stats/reset_password.dart';
 import 'package:climate_stats/sign_in_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:climate_stats/reusable/input_style.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_pw_validator/flutter_pw_validator.dart';
 
@@ -36,6 +39,9 @@ class _InputFieldsState extends State<InputFields> {
   // Initialise controllers for text fields
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController firstNameController = TextEditingController();
+  final TextEditingController lastNameController = TextEditingController();
+  final TextEditingController phoneNumberController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -61,14 +67,72 @@ class _InputFieldsState extends State<InputFields> {
                 // Heading text
                 const Text(
                   "Sign up for an account",
-                  style: TextStyle(color: Colors.white),
+                  textScaleFactor: 1.5,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-
+                const SizedBox(height: 20),
                 // Sized box (defines width of child text fields)
                 SizedBox(
                   width: 500,
                   child: Column(
                     children: [
+                      TextFormField(
+                        controller: firstNameController,
+                        decoration: InputDecoration(
+                          hintText: 'First Name',
+                          filled: true,
+                          fillColor: Colors.grey[300],
+                          border: InputStyle,
+                        ),
+                        validator: (String? value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter a name';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                      TextFormField(
+                        controller: lastNameController,
+                        decoration: InputDecoration(
+                          hintText: 'Last Name',
+                          filled: true,
+                          fillColor: Colors.grey[300],
+                          border: InputStyle,
+                        ),
+                        validator: (String? value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter a name';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                      TextFormField(
+                        controller: phoneNumberController,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: <TextInputFormatter>[
+                          FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                        ],
+                        maxLength: 10,
+                        decoration: InputDecoration(
+                            prefixIcon: const Icon(Icons.contact_phone),
+                            hintText: 'Phone Number',
+                            filled: true,
+                            fillColor: Colors.grey[300],
+                            border: InputStyle,
+                            counterText: ''),
+                        validator: (String? value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter a phone number';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 10),
                       // Email Field
                       TextFormField(
                         controller: emailController,
@@ -153,24 +217,30 @@ class _InputFieldsState extends State<InputFields> {
                       backgroundColor: MaterialStateProperty.all<Color>(
                           Colors.grey.shade200),
                     ),
-                    onPressed: () {
+                    onPressed: () => {
                       // Validate will return true if the form is valid,
                       // or false if the form is invalid
-                      (_formKey.currentState!.validate() && _isValid)
-                          ?
+                      if (_formKey.currentState!.validate() && _isValid)
+                        {
                           // Sign the user up (create user account)
                           context
                               .read<AuthenticationService>()
                               .signUp(
                                   email: emailController.text.trim(),
-                                  password: passwordController.text.trim())
+                                  password: passwordController.text.trim(),
+                                  firstName: firstNameController.text.trim(),
+                                  lastName: lastNameController.text.trim(),
+                                  phoneNumber:
+                                      phoneNumberController.text.trim())
                               .then((value) => Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
                                             const SignInPage()),
-                                  ))
-                          : null;
+                                  )),
+                        }
+                      else
+                        {null}
                     },
                     child: const Text('Sign Up'),
                   ),
