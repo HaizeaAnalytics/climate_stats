@@ -172,6 +172,7 @@ PopupMenuButton _popupMenuButton(
           break;
         case "SignOut":
           context.read<AuthenticationService>().signOut();
+          Navigator.of(context).popUntil((route) => route.isFirst);
           break;
       }
     },
