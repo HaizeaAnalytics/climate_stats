@@ -232,12 +232,7 @@ class _InputFieldsState extends State<InputFields> {
                                   lastName: lastNameController.text.trim(),
                                   phoneNumber:
                                       phoneNumberController.text.trim())
-                              .then((value) => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const SignInPage()),
-                                  )),
+                              .then((value) => Navigator.of(context).pop())
                         }
                       else
                         {null}

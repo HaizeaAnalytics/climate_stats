@@ -41,40 +41,44 @@ class _TopAppBar extends State<TopAppBar> {
       padding: EdgeInsets.only(left: 10.0, right: 10.0),
       height: barHeight,
       decoration: BoxDecoration(
-        image: DecorationImage(image: AssetImage('../assets/background_blur_appbar.png'), fit:BoxFit.cover),
+        image: DecorationImage(
+            image: AssetImage('../assets/background_blur_appbar.png'),
+            fit: BoxFit.cover),
         border: Border(bottom: BorderSide(width: 1, color: Colors.white)),
         boxShadow: [BoxShadow(color: Colors.grey, blurRadius: 10.0)],
-        ),
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           Container(
             padding: EdgeInsets.only(right: 70.0),
-            height: barHeight*.8,
+            height: barHeight * .8,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
                 Container(
-                  padding: EdgeInsets.only(right: 10.0),
-                  child: TextButton.icon(
-                    onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage(userInfo)),);
-                    },
-                    icon: Image.asset('../assets/haizea.png', fit: BoxFit.cover),
-                    label: Text(""),
-                  )
-                ),
+                    padding: EdgeInsets.only(right: 10.0),
+                    child: TextButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => HomePage(userInfo)),
+                        );
+                      },
+                      icon: Image.asset('../assets/haizea.png',
+                          fit: BoxFit.cover),
+                      label: Text(""),
+                    )),
               ],
             ),
           ),
-
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               Container(
                   padding: EdgeInsets.only(right: 10.0),
-                  child: _popupMenuButton(context, userInfo, title)
-                ),
+                  child: _popupMenuButton(context, userInfo, title)),
             ],
           ),
         ],
@@ -168,12 +172,6 @@ PopupMenuButton _popupMenuButton(
           break;
         case "SignOut":
           context.read<AuthenticationService>().signOut();
-          setState(){}
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => SignInPage()),
-          );
-          
           break;
       }
     },

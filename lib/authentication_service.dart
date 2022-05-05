@@ -42,9 +42,9 @@ class AuthenticationService {
           'firstName': firstName,
           'lastName': lastName,
           'phoneNumber': phoneNumber,
-          'favourites': {}
+          'favourites': []
         });
-        return "Signed up!";
+        return "Signed Up!";
       } else {
         throw Error();
       }
