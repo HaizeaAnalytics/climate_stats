@@ -39,6 +39,7 @@ class AuthenticationService {
             .doc(user.uid)
             .set({
           'email': email,
+          'password': password,
           'firstName': firstName,
           'lastName': lastName,
           'phoneNumber': phoneNumber,

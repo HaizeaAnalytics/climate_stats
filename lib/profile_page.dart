@@ -15,7 +15,6 @@ class ProfilePage extends StatelessWidget {
   ProfilePage(this.userInfo) {
     userUid = userInfo.uid.toString();
     lastLoginTime = userInfo.metadata.lastSignInTime!.toLocal().toString();
-    print(lastLoginTime);
   }
   @override
   Widget build(BuildContext context) {
@@ -122,13 +121,13 @@ class _AccountInfoFieldsState extends State<AccountInfoFields> {
         .then((DocumentSnapshot documentSnapshot) {
       if (documentSnapshot.exists) {
         firstNameController.value =
-            TextEditingValue(text: documentSnapshot.get("firstname"));
+            TextEditingValue(text: documentSnapshot.get("firstName"));
         lastNameController.value =
-            TextEditingValue(text: documentSnapshot.get("lastname"));
+            TextEditingValue(text: documentSnapshot.get("lastName"));
         passwordController.value =
             TextEditingValue(text: documentSnapshot.get("password"));
         phoneController.value =
-            TextEditingValue(text: documentSnapshot.get("phone"));
+            TextEditingValue(text: documentSnapshot.get("phoneNumber"));
         emailController.value =
             TextEditingValue(text: documentSnapshot.get("email"));
 
@@ -325,10 +324,10 @@ class _AccountInfoFieldsState extends State<AccountInfoFields> {
                       users
                           .doc(userUid)
                           .update({
-                            'firstname': firstNameController.text.trim(),
-                            'lastname': lastNameController.text.trim(),
+                            'firstName': firstNameController.text.trim(),
+                            'lastName': lastNameController.text.trim(),
                             'password': passwordController.text.trim(),
-                            'phone': phoneController.text.trim(),
+                            'phoneNumber': phoneController.text.trim(),
                             'email': emailController.text.trim()
                           })
                           .then((value) => _showDialog(context))
