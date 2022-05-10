@@ -76,7 +76,7 @@ class _Maps extends State<Maps>{
   MapSublayer _getPolygonLayer(Set<MapPolygon> polygons) {
     return MapPolygonLayer(
       polygons: polygons,
-      color: Colors.grey.withOpacity(0.5),
+      color: Colors.grey.withOpacity(0.9),
       strokeColor: Colors.red,
     );
   }
@@ -84,7 +84,7 @@ class _Maps extends State<Maps>{
 
   @override
   void initState() {
-
+    // String _currrentLocation = Globals.ssssadress.value;
     // _polygonData = <PolygonDataModel>[
     //   PolygonDataModel(_currrentLocation, 'assets/RoundIcon.png',
     //       color: const Color.fromRGBO(237, 41, 57, 1.0)),];
@@ -119,11 +119,11 @@ class _Maps extends State<Maps>{
                     sublayers: <MapSublayer>[_getPolygonLayer(snapshot.data)],
                     zoomPanBehavior: _zoomPanBehavior,
                   ),
-                  GestureDetector(
-                    onTap: (){
-                      print('Navigate to Visualisation' );
-                    },
-                  )
+                  // GestureDetector(
+                  //   onTap: (){
+                  //     print('Navigate to Visualisation' );
+                  //   },
+                  // )
                 ],
               );
             } else {

@@ -14,6 +14,7 @@ import 'package:flutter/material.dart';
 
 const String databaseName = "userInfo";
 String userEmail = "";
+String userUid = "";
 
 
 
@@ -24,7 +25,7 @@ class HomePage extends StatelessWidget {
 
 
   HomePage(this.userInfo) {
-
+    userUid = userInfo.uid.toString();
     userEmail = userInfo.email.toString();
     lastLoginTime = userInfo.metadata.lastSignInTime!.toLocal().toString();
   }
@@ -82,38 +83,38 @@ class HomePage extends StatelessWidget {
                   height: 500,
                   child:Maps(),
                 ),
-                // SizedBox(
-                //   width: 50,
-                //   height: 500,
-                //   child: Scaffold(
-                //     backgroundColor: const Color.fromRGBO(0, 0, 0, 0),
-                //     floatingActionButton: Column(
-                //       mainAxisAlignment: MainAxisAlignment.end,
-                //         children: [
-                //           FloatingActionButton(
-                //             onPressed: () {
-                //               // Add your onPressed code here!
-                //             },
-                //             child: const Icon(Icons.add_location),
-                //             backgroundColor: Colors.lightBlueAccent,
-                //           ),
-                //           const SizedBox(
-                //             height: 10,
-                //           ),
-                //           FloatingActionButton(
-                //             onPressed: () {
-                //               Navigator.push(
-                //                 context,
-                //                 MaterialPageRoute(builder: (context) => const SecondRoute()),
-                //               );// Add your onPressed code here!
-                //             },
-                //             child: const Icon(Icons.addchart),
-                //             backgroundColor: Colors.lightBlueAccent,
-                //           ),
-                //         ],
-                //     )
-                //   ),
-                // ),
+                SizedBox(
+                  width: 50,
+                  height: 500,
+                  child: Scaffold(
+                    backgroundColor: const Color.fromRGBO(0, 0, 0, 0),
+                    floatingActionButton: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          // FloatingActionButton(
+                          //   onPressed: () {
+                          //     // Add your onPressed code here!
+                          //   },
+                          //   child: const Icon(Icons.add_location),
+                          //   backgroundColor: Colors.lightBlueAccent,
+                          // ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          FloatingActionButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => const SecondRoute()),
+                              );// Add your onPressed code here!
+                            },
+                            child: const Icon(Icons.addchart),
+                            backgroundColor: Colors.lightBlueAccent,
+                          ),
+                        ],
+                    )
+                  ),
+                ),
               ],
             ),
           ],
@@ -204,7 +205,7 @@ class _FavouriteList extends State<FavouriteList>{
   }
   void getFavouriteList() async{
 
-    await FirebaseFirestore.instance.collection(databaseName).doc(userEmail).get().then((DocumentSnapshot document){
+    await FirebaseFirestore.instance.collection(databaseName).doc(userUid).get().then((DocumentSnapshot document){
         if(document.exists){
           favourites=List.from(document.get("favourites"));
         }
