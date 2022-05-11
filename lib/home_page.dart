@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:climate_stats/data_page.dart';
+
 import 'globals.dart';
 import 'package:climate_stats/authentication_service.dart';
 import 'package:climate_stats/app_bar.dart';
@@ -105,7 +107,7 @@ class HomePage extends StatelessWidget {
                             onPressed: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => const SecondRoute()),
+                                MaterialPageRoute(builder: (context) => DataPage(userInfo)),
                               );// Add your onPressed code here!
                             },
                             child: const Icon(Icons.addchart),
@@ -239,7 +241,7 @@ class _FavouriteList extends State<FavouriteList>{
                 icon:Icon(Icons.delete_forever),
                 onPressed: () async{
                   CollectionReference user = FirebaseFirestore.instance.collection(databaseName);
-                  user.doc(userEmail).update({'favourites':FieldValue.arrayRemove([favourites[index]])});
+                  user.doc(userUid).update({'favourites':FieldValue.arrayRemove([favourites[index]])});
                   getFavouriteList();
                 },
               ),

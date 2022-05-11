@@ -1,25 +1,40 @@
 import 'dart:html';
+import 'package:climate_stats/home_page.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/widgets.dart';
+
+import 'app_bar.dart';
 
 // run command: flutter run --no-sound-null-safety to run this file
+const String databaseName = "userInfo";
+String userEmail = "";
+String userUid = "";
 
 class DataPage extends StatelessWidget {
-  const DataPage({Key? key}) : super(key:key);
+  // const DataPage({Key? key}) : super(key:key);
+  User userInfo;
+  String lastLoginTime = "";
 
+  DataPage(this.userInfo) {
+    userUid = userInfo.uid.toString();
+    userEmail = userInfo.email.toString();
+    lastLoginTime = userInfo.metadata.lastSignInTime!.toLocal().toString();
+  }
 
 // Layout of the data page
 @override
   Widget build(BuildContext context) {
     return Scaffold(
-        // Navigation bar area
+        appBar: new TopAppBar("Visualisation", userInfo),
         body: Container(
           child: Column(
             children: [
-              LogoArea(),
+              // LogoArea(),
+              SizedBox(height: 80,),
               SearchBar(),
               SizedBox(height: 20),
               Row(
@@ -41,7 +56,7 @@ class DataPage extends StatelessWidget {
           ),         
           decoration: const BoxDecoration(
             image: DecorationImage(
-              image: AssetImage("../assets/background.jpg"),
+              image: AssetImage("../assets/background_blur.jpg"),
               fit: BoxFit.cover,
             ),
           ),
@@ -124,8 +139,9 @@ class Button extends StatelessWidget{
       width: 150,
       height: 50,
       child: ElevatedButton(
-        onPressed: () {
-          print("Clicked");
+        onPressed: () async {
+          CollectionReference user = FirebaseFirestore.instance.collection(databaseName);
+          user.doc(userUid).update({'favourites':FieldValue.arrayUnion(["testlocation"])});
         },
         child: const Text('Add to Favourties'),
         style: ElevatedButton.styleFrom(
