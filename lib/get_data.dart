@@ -8,7 +8,8 @@ import 'package:http/http.dart' as http;
 Future<List?> getPolygon(String address) async {
   // Compose the request
   String requestTarget =
-      "https://us-central1-techlauncher-e18ff.cloudfunctions.net/polygonForAddress";
+      // Change this URL to target a different API endpoint
+      'https://us-central1-techlauncher-e18ff.cloudfunctions.net/polygonForAddress';
   String key = "street_address";
   String formattedRequest = requestTarget + "?" + key + "=" + address;
   var request = http.Request('POST', Uri.parse(formattedRequest));
@@ -41,12 +42,11 @@ Future<List?> getPolygon(String address) async {
 ///
 /// Takes [List] of coordinates as param. Void return should be replaced with
 /// the JSON that is returned.
-Future<List?> getTreeData(List coordinates) async {
+Future<String?> getTreeData(List coordinates) async {
   var headers = {'Content-Type': 'application/json'};
-  var request = http.Request(
-      'POST',
-      Uri.parse(
-          'https://australia-southeast1-wald-1526877012527.cloudfunctions.net/tree-change-drill'));
+  var request = http.Request('POST', Uri.parse(
+      // Change this URL to target a different API endpoint
+      'https://australia-southeast1-wald-1526877012527.cloudfunctions.net/tree-change-drill'));
   request.body = json.encode({
     "layer_name": "wcf",
     "vector": {
@@ -63,8 +63,23 @@ Future<List?> getTreeData(List coordinates) async {
   http.StreamedResponse response = await request.send();
 
   if (response.statusCode == 200) {
-    print(await response.stream.bytesToString());
+    return (await response.stream.bytesToString());
   } else {
     print(response.reasonPhrase);
   }
+}
+
+Future<List> split(String str) async {
+  LineSplitter ls = const LineSplitter();
+  List<String> list = ls.convert(str);
+
+  List<double> dates = [];
+  List<double> values = [];
+
+  for (String item in list) {
+    var si = item.split(",");
+    dates.add(double.parse(si[0]));
+    values.add(double.parse(si[1]));
+  }
+  return [dates, values];
 }

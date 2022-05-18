@@ -14,7 +14,11 @@ import 'package:climate_stats/get_data.dart' as data;
 const String databaseName = "userInfo";
 String userEmail = "";
 String userUid = "";
+
+// Vars for accepting input/ graphing
 TextEditingController textController = TextEditingController();
+var dates;
+var values;
 
 class DataPage extends StatelessWidget {
   // const DataPage({Key? key}) : super(key:key);
@@ -167,17 +171,39 @@ class SubmitButton extends StatelessWidget {
             // Get the contents of the search bar
             String address = textController.text;
 
-            // Validate address is non-empty
+            // If address provided, get data
             if (address.isNotEmpty) {
-              // TODO: Steps to get data for graphing
               // Step 1: Get the polygon coordinates from address
               final coordinates = await data.getPolygon(address);
               // Step 2: Get the time series (tree data) using coordinates
               if (coordinates != null) {
                 final treeData = await data.getTreeData(coordinates);
-                print(treeData);
+                //print(treeData);
+                var splitdata = await data.split(treeData!);
+                dates = splitdata[0];
+                values = splitdata[1];
+                print(dates);
+                print(values);
+              } else {
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) => const AlertDialog(
+                          title: Text('Data Not Found'),
+                          content: Text(
+                              'No matching data was found for that address.\nPlease check the spelling and try again.'),
+                        ));
               }
               // Step 3: Make graph using time series data
+            }
+
+            // If no address provided, prompt user
+            else {
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) => const AlertDialog(
+                        title: Text('Empty field'),
+                        content: Text('Please enter an ACT street address.'),
+                      ));
             }
           },
           child: const Icon(Icons.send),
