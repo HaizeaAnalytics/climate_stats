@@ -41,8 +41,7 @@ Future<List?> getPolygon(String address) async {
 ///
 /// Takes [List] of coordinates as param. Void return should be replaced with
 /// the JSON that is returned.
-void getTreeData(List coordinates) async {
-  print("gets to here");
+Future<List?> getTreeData(List coordinates) async {
   var headers = {'Content-Type': 'application/json'};
   var request = http.Request(
       'POST',

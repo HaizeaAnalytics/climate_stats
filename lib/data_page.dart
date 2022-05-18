@@ -170,12 +170,14 @@ class SubmitButton extends StatelessWidget {
             // Validate address is non-empty
             if (address.isNotEmpty) {
               // TODO: Steps to get data for graphing
-              // 1: Get the polygon coordinates from address
-              final response = await data.getPolygon(address);
-              print(response);
-              // 2: Get the time series (tree data) using coordinates
-              //data.getTreeData(coordinates)
-              // 3: Make graph using time series data
+              // Step 1: Get the polygon coordinates from address
+              final coordinates = await data.getPolygon(address);
+              // Step 2: Get the time series (tree data) using coordinates
+              if (coordinates != null) {
+                final treeData = await data.getTreeData(coordinates);
+                print(treeData);
+              }
+              // Step 3: Make graph using time series data
             }
           },
           child: const Icon(Icons.send),
