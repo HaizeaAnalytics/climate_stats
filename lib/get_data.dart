@@ -12,9 +12,13 @@ void getPolygon(String address) async {
   String formattedRequest = requestTarget + "?" + key + "=" + address;
   var request = http.Request('POST', Uri.parse(formattedRequest));
   request.body = '''''';
+  http.StreamedResponse response = await request.send();
 
-  Future<Map?> polygon = _getResponseAsMap(request);
-  print(polygon);
+  if (response.statusCode == 200) {
+    print(await response.stream.bytesToString());
+  } else {
+    print(response.reasonPhrase);
+  }
 }
 
 /// Retrieves the data from the tree data set for a given list of coordinates.
@@ -22,26 +26,31 @@ void getPolygon(String address) async {
 /// Takes [List] of coordinates as param. Void return should be replaced with
 /// the JSON that is returned.
 void getTreeData(List coordinates) async {
-  if (coordinates[0] == coordinates[coordinates.length - 1]) {
-    var headers = {'Content-Type': 'application/json'};
-    var request = http.Request(
-        'POST',
-        Uri.parse(
-            'https://australia-southeast1-wald-1526877012527.cloudfunctions.net/tree-change-drill'));
-    request.body = json.encode({
-      "layer_name": "wcf",
-      "vector": {
-        "type": "Feature",
-        "properties": {},
-        "geometry": {
-          "type": "Polygon",
-          "coordinates": [coordinates]
-        }
+  print("gets to here");
+  var headers = {'Content-Type': 'application/json'};
+  var request = http.Request(
+      'POST',
+      Uri.parse(
+          'https://australia-southeast1-wald-1526877012527.cloudfunctions.net/tree-change-drill'));
+  request.body = json.encode({
+    "layer_name": "wcf",
+    "vector": {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [coordinates]
       }
-    });
-    request.headers.addAll(headers);
+    }
+  });
+  request.headers.addAll(headers);
 
-    Future<String?> response = _getResponseAsJSON(request);
+  http.StreamedResponse response = await request.send();
+
+  if (response.statusCode == 200) {
+    print(await response.stream.bytesToString());
+  } else {
+    print(response.reasonPhrase);
   }
 }
 
@@ -53,7 +62,7 @@ Future<String?> _getResponseAsJSON(http.Request request) async {
   if (response.statusCode == 200) {
     final String responseString = await response.stream.bytesToString();
     final String responseJSON = json.encode({responseString});
-    return responseJSON;
+    return responseString;
   }
 
   // Else, print reason phrase and return null
@@ -67,6 +76,7 @@ Future<Map?> _getResponseAsMap(http.Request request) async {
 
   // If https status is ok, return response as Map
   if (response.statusCode == 200) {
+    print("200");
     final decoded = jsonDecode(response.toString()) as Map;
     final polygon = decoded['Polygon'] as Map;
     return polygon;
