@@ -3,19 +3,26 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+/// the global attributes used in here, is helpful for story the context that will be
+/// used outside of class
 const String databaseName = "userInfo";
 String userUid = "";
 String lastUsername = "";
 String lastPassword = "";
 
+/// This class is controll all elements in profile page
+/// The stateless widget used in here because this page does not contains any dynamic interation
 class ProfilePage extends StatelessWidget {
   //const ProfilePage({Key? key}) : super(key: key);
   User userInfo;
   String lastLoginTime = "";
+
+  /// Iniital the login time and uid, the login time will be displayed in the page
   ProfilePage(this.userInfo) {
     userUid = userInfo.uid.toString();
     lastLoginTime = userInfo.metadata.lastSignInTime!.toLocal().toString();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,12 +30,15 @@ class ProfilePage extends StatelessWidget {
         appBar: new TopAppBar("Profit", userInfo),
         body: Container(
           child: Column(
+            /// the page has 3 conponents: logo, page info and user info
             children: [
               LogoArea(),
               PageInfo(this.lastLoginTime),
               AccountInfoFields(),
             ],
           ),
+
+          /// for the backgound of page
           decoration: const BoxDecoration(
             image: DecorationImage(
               image: AssetImage("../assets/background.jpg"),
@@ -106,7 +116,8 @@ class _AccountInfoFieldsState extends State<AccountInfoFields> {
   FirebaseAuth auth = FirebaseAuth.instance;
   User? currentUser = FirebaseAuth.instance.currentUser;
 
-  // Initialise controllers for text fields
+  // Initialise controllers for text fields, for fetch the current user info
+  // from DB
   TextEditingController firstNameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -153,6 +164,8 @@ class _AccountInfoFieldsState extends State<AccountInfoFields> {
       child: Center(
         child: SizedBox(
           width: 450,
+
+          /// user information will display in each widget
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
@@ -309,6 +322,7 @@ class _AccountInfoFieldsState extends State<AccountInfoFields> {
               ),
 
               // save button
+              // the when click the save buttom, the user info will be saved in to database
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
                 child: ElevatedButton(
@@ -320,7 +334,9 @@ class _AccountInfoFieldsState extends State<AccountInfoFields> {
                       CollectionReference users =
                           FirebaseFirestore.instance.collection(databaseName);
 
-                      //Future<void> updateUser() {
+                      // update the user info to the database, if the info does
+                      // not change, it will be saved as the same as the original
+                      // here can be optimal, but it does not implement in this semester
                       users
                           .doc(userUid)
                           .update({
@@ -333,7 +349,6 @@ class _AccountInfoFieldsState extends State<AccountInfoFields> {
                           .then((value) => _showDialog(context))
                           .catchError((error) =>
                               print("Failed to update user: $error"));
-                      //}
 
                       //update email and password in auth page at the same time
                       if (lastUsername != emailController.text.trim() &&
@@ -364,9 +379,7 @@ class _AccountInfoFieldsState extends State<AccountInfoFields> {
   }
 }
 
-/**
- * pop the dialog to back the last page
- */
+/// pop the dialog to back the last page
 _showDialog(BuildContext context) {
   return showDialog(
       context: context,
