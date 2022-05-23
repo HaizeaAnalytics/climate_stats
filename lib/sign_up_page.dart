@@ -1,8 +1,7 @@
-import 'package:climate_stats/authentication_service.dart';
-import 'package:climate_stats/reset_password.dart';
-import 'package:climate_stats/sign_in_page.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:climate_stats/reusable/input_style.dart';
+// ignore_for_file: avoid_print
+
+import 'authentication_service.dart';
+import 'reusable/input_style.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

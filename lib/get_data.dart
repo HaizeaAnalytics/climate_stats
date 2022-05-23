@@ -33,6 +33,7 @@ Future<List?> getPolygon(String address) async {
   }
 
   // If status not OK, print reason phrase and return null
+  // ignore: todo
   // TODO: implement graceful error handling e.g. show message to user
   print(response.reasonPhrase);
   return null;

@@ -1,11 +1,9 @@
-import 'dart:html';
-import 'package:climate_stats/home_page.dart';
-import 'package:fl_chart/fl_chart.dart';
+// ignore_for_file: avoid_print
+
+import 'package:fl_chart/fl_chart.dart'; // Outdated should not be used in null safe library
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/widgets.dart';
 
 import 'app_bar.dart';
 import 'package:climate_stats/get_data.dart' as data;
@@ -17,15 +15,15 @@ String userUid = "";
 
 // Vars for accepting input/ graphing
 TextEditingController textController = TextEditingController();
-var dates;
-var values;
+dynamic dates;
+dynamic values;
 
 class DataPage extends StatelessWidget {
   // const DataPage({Key? key}) : super(key:key);
   User userInfo;
   String lastLoginTime = "";
 
-  DataPage(this.userInfo) {
+  DataPage(this.userInfo, {Key? key}) : super(key: key) {
     userUid = userInfo.uid.toString();
     userEmail = userInfo.email.toString();
     lastLoginTime = userInfo.metadata.lastSignInTime!.toLocal().toString();
@@ -35,23 +33,23 @@ class DataPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: new TopAppBar("Visualisation", userInfo),
+        appBar: TopAppBar("Visualisation", userInfo),
         body: Container(
           child: Column(children: [
             // LogoArea(),
-            SizedBox(
+            const SizedBox(
               height: 80,
             ),
-            SearchBar(),
-            SizedBox(height: 20),
+            const SearchBar(),
+            const SizedBox(height: 20),
             Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-              Address(),
+              const Address(),
               SubmitButton(),
-              Button(),
-              VariableDropDown(),
-              VariableDropDown()
+              const Button(),
+              const VariableDropDown(),
+              const VariableDropDown()
             ]),
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -74,7 +72,7 @@ class LogoArea extends StatelessWidget {
   const LogoArea({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       child: Row(
         children: [
           Image.asset('../assets/haizea.png', fit: BoxFit.cover),
@@ -90,8 +88,9 @@ class LogoArea extends StatelessWidget {
 class SearchBar extends StatelessWidget {
   const SearchBar({Key? key}) : super(key: key);
 
+  @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: 400,
       height: 75,
       child: TextField(
@@ -101,7 +100,7 @@ class SearchBar extends StatelessWidget {
           // labelText: "Finds somewhere new.",
           // labelStyle: TextStyle(fontSize: 24),
           hintText: "Search Address",
-          prefixIcon: Icon(Icons.search),
+          prefixIcon: const Icon(Icons.search),
           filled: true,
           fillColor: Colors.grey[300],
           border: OutlineInputBorder(
@@ -118,9 +117,9 @@ class Address extends StatelessWidget {
   const Address({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
         width: 300,
-        child: const Text("47 McGregor Street, Menindee",
+        child: Text("47 McGregor Street, Menindee",
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 20.0,
@@ -135,7 +134,7 @@ class Button extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
         width: 150,
         height: 50,
         child: ElevatedButton(
@@ -149,8 +148,9 @@ class Button extends StatelessWidget {
           child: const Text('Add to Favourties'),
           style: ElevatedButton.styleFrom(
               primary: Colors.blue,
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-              textStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              textStyle:
+                  const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
         ));
   }
 }
@@ -163,7 +163,7 @@ class SubmitButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
         width: 150,
         height: 50,
         child: ElevatedButton(
@@ -228,7 +228,7 @@ class _VariableDropDown extends State<VariableDropDown> {
     return Container(
       height: 50,
       width: 150,
-      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: Colors.black, width: 4),
@@ -236,7 +236,7 @@ class _VariableDropDown extends State<VariableDropDown> {
       child: DropdownButton<String>(
         value: value,
         iconSize: 36,
-        icon: Icon(Icons.arrow_drop_down, color: Colors.black),
+        icon: const Icon(Icons.arrow_drop_down, color: Colors.black),
         isExpanded: true,
         dropdownColor: Colors.white,
         items: items.map(buildMenuItem).toList(),
@@ -249,7 +249,7 @@ class _VariableDropDown extends State<VariableDropDown> {
         value: item,
         child: Text(
           item,
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
         ),
       );
 }
@@ -266,7 +266,7 @@ class LineChartWidget extends StatelessWidget {
       height: 500,
       child: LineChart(
         LineChartData(
-            backgroundColor: Color(0xff23b636),
+            backgroundColor: const Color(0xff23b636),
             minX: 0,
             maxX: 11,
             minY: 0,

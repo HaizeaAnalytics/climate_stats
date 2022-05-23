@@ -1,16 +1,17 @@
+// ignore_for_file: avoid_print
+
 import 'dart:convert';
 import 'globals.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:syncfusion_flutter_maps/maps.dart';
 
-class Maps extends StatefulWidget{
-
+class Maps extends StatefulWidget {
   @override
   State<Maps> createState() => _Maps();
 }
 
-class _Maps extends State<Maps>{
+class _Maps extends State<Maps> {
   // late String _currrentLocation = Globals.ssssadress.value;
   late List<PolygonDataModel> _polygonData;
   late MapZoomPanBehavior _zoomPanBehavior;
@@ -20,7 +21,8 @@ class _Maps extends State<Maps>{
     String _currrentLocation = Globals.ssssadress.value;
     _polygonData = <PolygonDataModel>[
       PolygonDataModel(_currrentLocation, 'assets/RoundIcon.png',
-          color: const Color.fromRGBO(237, 41, 57, 1.0)),];
+          color: const Color.fromRGBO(237, 41, 57, 1.0)),
+    ];
     _zoomPanBehavior = MapZoomPanBehavior(
       zoomLevel: 10,
       // Brazil coordinate.
@@ -41,7 +43,7 @@ class _Maps extends State<Maps>{
     for (int i = 0; i < jsonLength; i++) {
       final dynamic features = jsonData[key][i];
       final Map<String, dynamic> geometry =
-      features['geometry'] as Map<String, dynamic>;
+          features['geometry'] as Map<String, dynamic>;
 
       if (geometry['type'] == 'Polygon') {
         polygonGeometryData = geometry['coordinates'][0] as List<dynamic>;
@@ -56,6 +58,7 @@ class _Maps extends State<Maps>{
     }
     return _getPolygons(polygons);
   }
+
   List<MapLatLng> _getLatLngPoints(List<dynamic> polygonPoints) {
     final List<MapLatLng> polygon = <MapLatLng>[];
     for (int i = 0; i < polygonPoints.length; i++) {
@@ -67,7 +70,7 @@ class _Maps extends State<Maps>{
   Set<MapPolygon> _getPolygons(List<List<MapLatLng>> polygonPoints) {
     return List<MapPolygon>.generate(
       polygonPoints.length,
-          (int index) {
+      (int index) {
         return MapPolygon(points: polygonPoints[index]);
       },
     ).toSet();
@@ -80,7 +83,6 @@ class _Maps extends State<Maps>{
       strokeColor: Colors.red,
     );
   }
-
 
   @override
   void initState() {
@@ -101,8 +103,6 @@ class _Maps extends State<Maps>{
     super.initState();
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
@@ -115,7 +115,8 @@ class _Maps extends State<Maps>{
               return Stack(
                 children: <Widget>[
                   MapTileLayer(
-                    urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    urlTemplate:
+                        'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                     sublayers: <MapSublayer>[_getPolygonLayer(snapshot.data)],
                     zoomPanBehavior: _zoomPanBehavior,
                   ),
@@ -134,9 +135,6 @@ class _Maps extends State<Maps>{
       },
     );
   }
-
-
-
 }
 
 class PolygonDataModel {

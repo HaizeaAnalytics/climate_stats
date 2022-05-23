@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:climate_stats/app_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -27,14 +29,14 @@ class ProfilePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         // Navigation bar area
-        appBar: new TopAppBar("Profit", userInfo),
+        appBar: TopAppBar("Profit", userInfo),
         body: Container(
           child: Column(
             /// the page has 3 conponents: logo, page info and user info
             children: [
-              LogoArea(),
-              PageInfo(this.lastLoginTime),
-              AccountInfoFields(),
+              const LogoArea(),
+              PageInfo(lastLoginTime),
+              const AccountInfoFields(),
             ],
           ),
 
@@ -56,7 +58,7 @@ class LogoArea extends StatelessWidget {
   const LogoArea({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       child: Row(
         children: [
           // Image.asset('../assets/haizea.png', fit: BoxFit.cover),
@@ -77,23 +79,21 @@ class PageInfo extends StatelessWidget {
   PageInfo(this.lastLoginTime);
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        children: [
-          const Text("Manage Profile",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 54.0,
-                color: Colors.white,
-              )),
-          Text(
-            "Last login: " + lastLoginTime,
+    return Column(
+      children: [
+        const Text("Manage Profile",
             style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 54.0,
               color: Colors.white,
-            ),
+            )),
+        Text(
+          "Last login: " + lastLoginTime,
+          style: const TextStyle(
+            color: Colors.white,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
@@ -387,7 +387,7 @@ _showDialog(BuildContext context) {
         return AlertDialog(
           title: const Text("Account information updated"),
           actions: <Widget>[
-            FlatButton(
+            TextButton(
               child: const Text("Back"),
               onPressed: () {
                 Navigator.pop(context);
