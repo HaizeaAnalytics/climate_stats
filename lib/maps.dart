@@ -17,7 +17,7 @@ class _Maps extends State<Maps>{
   late String _boundaryJson;
 
   Future<Set<MapPolygon>> _getPolygonPoints() async {
-    String _currrentLocation = Globals.ssssadress.value;
+    String _currrentLocation = Globals.globalAddress.value;
     _polygonData = <PolygonDataModel>[
       PolygonDataModel(_currrentLocation, 'assets/RoundIcon.png',
           color: const Color.fromRGBO(237, 41, 57, 1.0)),];
@@ -106,7 +106,7 @@ class _Maps extends State<Maps>{
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
-      valueListenable: Globals.ssssadress,
+      valueListenable: Globals.globalAddress,
       builder: (context, value, widget) {
         return FutureBuilder<dynamic>(
           future: _getPolygonPoints(),

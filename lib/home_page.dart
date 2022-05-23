@@ -2,14 +2,10 @@ import 'dart:convert';
 import 'package:climate_stats/data_page.dart';
 
 import 'globals.dart';
-import 'package:climate_stats/authentication_service.dart';
 import 'package:climate_stats/app_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:syncfusion_flutter_maps/maps.dart';
-import 'package:http/http.dart' as http;
-import 'package:cloud_functions/cloud_functions.dart';
 import 'maps.dart';
 
 import 'package:flutter/material.dart';
@@ -228,7 +224,7 @@ class _FavouriteList extends State<FavouriteList>{
             child: ListTile(
               title: TextButton(
                 onPressed: () {
-                  Globals.ssssadress.value = favourites[index];
+                  Globals.globalAddress.value = favourites[index];
                 },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -288,7 +284,6 @@ class _AutocompleteSearch extends State<AutocompleteSearch> {
     return Autocomplete<String>(
       displayStringForOption: _displayStringForOption,
       optionsBuilder: (TextEditingValue textEditingValue) {
-        padding:
         if (textEditingValue.text == '') {
           return const Iterable<String>.empty();
         }
@@ -296,7 +291,6 @@ class _AutocompleteSearch extends State<AutocompleteSearch> {
           return option.toLowerCase().contains(textEditingValue.text.toLowerCase());
         });
       },
-
       optionsViewBuilder: (context, onSelected, options) => Align(
         alignment: Alignment.topLeft,
         child: Material(
@@ -313,10 +307,24 @@ class _AutocompleteSearch extends State<AutocompleteSearch> {
               itemBuilder: (BuildContext context, int index) {
                 final String option = options.elementAt(index);
                 return InkWell(
-                  onTap: () => onSelected(option),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Text(option),
+                  onTap: () {
+                    onSelected(option);
+                  },
+                  // child: Padding(
+                  //   padding: const EdgeInsets.all(16.0),
+                  //   child: Text(option),
+                  // ),
+                  child: Builder(
+                      builder: (BuildContext context) {
+
+                        final bool highlight = AutocompleteHighlightedOption.of(context) == index;
+                        return Container(
+                          color: highlight ? Theme.of(context).focusColor : null,
+                          padding: const EdgeInsets.all(16.0),
+                          child: Text(option),
+
+                        );
+                      }
                   ),
                 );
               },
@@ -335,9 +343,9 @@ class _AutocompleteSearch extends State<AutocompleteSearch> {
           focusNode: fieldFocusNode,
           autofocus: true,
           onFieldSubmitted: (String value) {
-            // Globals.ssssadress = ValueNotifier<String>(value);
-            Globals.ssssadress.value = value;
             onFieldSubmitted();
+            value = fieldTextEditingController.text;
+            Globals.globalAddress.value = value;
             print('You just typed a new entry  $value');
           },
           decoration: InputDecoration(
@@ -352,9 +360,7 @@ class _AutocompleteSearch extends State<AutocompleteSearch> {
           style: const TextStyle(fontWeight: FontWeight.bold),
         );
       },
-      onSelected: (String selection) {
-        debugPrint('You just selected ${_displayStringForOption(selection)}');
-      },
+
     );
   }
 }

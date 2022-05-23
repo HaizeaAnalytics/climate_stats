@@ -1,18 +1,18 @@
 import 'package:flutter/cupertino.dart';
 
 class Globals {
-  static String currentAddress = "O'Malley";
-  static ValueNotifier<String> ssssadress = ValueNotifier<String>("O'Malley");
+  static String defaultAddress = "O'Malley";
+  static ValueNotifier<String> globalAddress = ValueNotifier<String>("O'Malley");
 
-  static printInteger() {
-    print(currentAddress);
-    print(ssssadress.value);
+  static printValue() {
+    print(defaultAddress);
+    print(globalAddress.value);
   }
 
-  static changeInteger(String a) {
-    currentAddress = a;
-    ssssadress = ValueNotifier<String>(a);
-    printInteger(); // this can be replaced with any static method
+  static changeValue(String a) {
+    defaultAddress = a;
+    globalAddress = ValueNotifier<String>(a);
+    printValue();
   }
 
 }
