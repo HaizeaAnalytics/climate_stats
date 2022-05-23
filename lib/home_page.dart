@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:convert';
 import 'package:climate_stats/data_page.dart';
 
@@ -14,13 +16,9 @@ const String databaseName = "userInfo";
 String userEmail = "";
 String userUid = "";
 
-
-
 class HomePage extends StatelessWidget {
-
   User userInfo;
   String lastLoginTime = "";
-
 
   HomePage(this.userInfo) {
     userUid = userInfo.uid.toString();
@@ -31,40 +29,38 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: new TopAppBar("Home", userInfo),
+      appBar: TopAppBar("Home", userInfo),
       body: Container(
         child: Column(
           children: [
-            LogoArea(),
-
-
+            const LogoArea(),
             PageInfo(this.lastLoginTime),
-
-            SizedBox(height: 10,),
-
-            Container(
+            const SizedBox(
+              height: 10,
+            ),
+            SizedBox(
               width: 500,
               height: 50,
-              child: AutocompleteSearch(),
+              child: const AutocompleteSearch(),
             ),
-
-            SizedBox(height: 10),
-
+            const SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: const [
-                Text("Favourites",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 24.0,
-                      color: Colors.white,
-                    ),
+                Text(
+                  "Favourites",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 24.0,
+                    color: Colors.white,
+                  ),
                 ),
-                SizedBox(width: 900,),
+                SizedBox(
+                  width: 900,
+                ),
               ],
             ),
-
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -73,21 +69,19 @@ class HomePage extends StatelessWidget {
                   height: 500,
                   child: FavouriteList(),
                 ),
-
                 const SizedBox(width: 20),
-
                 SizedBox(
                   width: 500,
                   height: 500,
-                  child:Maps(),
+                  child: Maps(),
                 ),
                 SizedBox(
                   width: 50,
                   height: 500,
                   child: Scaffold(
-                    backgroundColor: const Color.fromRGBO(0, 0, 0, 0),
-                    floatingActionButton: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
+                      backgroundColor: const Color.fromRGBO(0, 0, 0, 0),
+                      floatingActionButton: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           // FloatingActionButton(
                           //   onPressed: () {
@@ -103,15 +97,15 @@ class HomePage extends StatelessWidget {
                             onPressed: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => DataPage(userInfo)),
-                              );// Add your onPressed code here!
+                                MaterialPageRoute(
+                                    builder: (context) => DataPage(userInfo)),
+                              ); // Add your onPressed code here!
                             },
                             child: const Icon(Icons.addchart),
                             backgroundColor: Colors.lightBlueAccent,
                           ),
                         ],
-                    )
-                  ),
+                      )),
                 ),
               ],
             ),
@@ -129,9 +123,7 @@ class HomePage extends StatelessWidget {
   }
 }
 
-/**
- * Data Viusalisation
- */
+/// Data Viusalisation
 class SecondRoute extends StatelessWidget {
   const SecondRoute({Key? key}) : super(key: key);
 
@@ -145,30 +137,32 @@ class SecondRoute extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-           Container(
-             width: 600,
-             height: 300,
-             color: Color.fromRGBO(38, 38, 38, 0.4),
-             child:Text("viusalsation ",
-                 style: const TextStyle(
-                   fontWeight: FontWeight.bold,
-                   fontSize: 32.0,
-                   color: Colors.white,
-                 )),
-           ),
-           SizedBox(width:20),
-           Column(
-             mainAxisAlignment: MainAxisAlignment.center,
-             children: [
-               AxisDropDown(),
-               SizedBox(height: 100,),
-               FloatingActionButton(
-                 onPressed: () {},
-                 child: const Icon(Icons.download),
-                 backgroundColor: Colors.lightBlueAccent,
-               ),
-             ],
-           ),
+            Container(
+              width: 600,
+              height: 300,
+              color: const Color.fromRGBO(38, 38, 38, 0.4),
+              child: const Text("viusalsation ",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 32.0,
+                    color: Colors.white,
+                  )),
+            ),
+            const SizedBox(width: 20),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const AxisDropDown(),
+                const SizedBox(
+                  height: 100,
+                ),
+                FloatingActionButton(
+                  onPressed: () {},
+                  child: const Icon(Icons.download),
+                  backgroundColor: Colors.lightBlueAccent,
+                ),
+              ],
+            ),
           ],
         ),
         decoration: const BoxDecoration(
@@ -183,43 +177,40 @@ class SecondRoute extends StatelessWidget {
   }
 }
 
-
-/**
- * Favourite list
- */
+/// Favourite list
 class FavouriteList extends StatefulWidget {
-
   @override
   _FavouriteList createState() => _FavouriteList();
 }
 
-class _FavouriteList extends State<FavouriteList>{
+class _FavouriteList extends State<FavouriteList> {
   List<String> favourites = [];
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     getFavouriteList();
   }
-  void getFavouriteList() async{
 
-    await FirebaseFirestore.instance.collection(databaseName).doc(userUid).get().then((DocumentSnapshot document){
-        if(document.exists){
-          favourites=List.from(document.get("favourites"));
-        }
+  void getFavouriteList() async {
+    await FirebaseFirestore.instance
+        .collection(databaseName)
+        .doc(userUid)
+        .get()
+        .then((DocumentSnapshot document) {
+      if (document.exists) {
+        favourites = List.from(document.get("favourites"));
+      }
     });
-    setState(() {
-
-    });
-
+    setState(() {});
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
         itemCount: favourites.length,
         // itemExtent: 20.0,
-        itemBuilder: (context, index){
+        itemBuilder: (context, index) {
           return Card(
             child: ListTile(
               title: TextButton(
@@ -234,23 +225,23 @@ class _FavouriteList extends State<FavouriteList>{
                 ),
               ),
               trailing: IconButton(
-                icon:Icon(Icons.delete_forever),
-                onPressed: () async{
-                  CollectionReference user = FirebaseFirestore.instance.collection(databaseName);
-                  user.doc(userUid).update({'favourites':FieldValue.arrayRemove([favourites[index]])});
+                icon: const Icon(Icons.delete_forever),
+                onPressed: () async {
+                  CollectionReference user =
+                      FirebaseFirestore.instance.collection(databaseName);
+                  user.doc(userUid).update({
+                    'favourites': FieldValue.arrayRemove([favourites[index]])
+                  });
                   getFavouriteList();
                 },
               ),
             ),
           );
-        }
-    );
+        });
   }
 }
 
-/**
- * autocomplete search
- */
+/// Autocomplete search
 class AutocompleteSearch extends StatefulWidget {
   const AutocompleteSearch({Key? key}) : super(key: key);
 
@@ -259,14 +250,12 @@ class AutocompleteSearch extends StatefulWidget {
 }
 
 class _AutocompleteSearch extends State<AutocompleteSearch> {
-
   List<String> addressOptions = <String>[];
-
 
   Future<void> loadJson() async {
     final String data = await rootBundle.loadString('assets/Address.json');
     final jsonResult = await json.decode(data);
-    setState((){
+    setState(() {
       addressOptions = List<String>.from(jsonResult['address']);
     });
   }
@@ -288,18 +277,21 @@ class _AutocompleteSearch extends State<AutocompleteSearch> {
           return const Iterable<String>.empty();
         }
         return addressOptions.where((String option) {
-          return option.toLowerCase().contains(textEditingValue.text.toLowerCase());
+          return option
+              .toLowerCase()
+              .contains(textEditingValue.text.toLowerCase());
         });
       },
       optionsViewBuilder: (context, onSelected, options) => Align(
         alignment: Alignment.topLeft,
         child: Material(
           shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(top:Radius.circular(16.0),bottom: Radius.circular(16.0)),
+            borderRadius: BorderRadius.vertical(
+                top: Radius.circular(16.0), bottom: Radius.circular(16.0)),
           ),
-          child: Container(
+          child: SizedBox(
             height: 52.0 * options.length,
-            width: 500 ,
+            width: 500,
             child: ListView.builder(
               padding: EdgeInsets.zero,
               itemCount: options.length,
@@ -332,12 +324,10 @@ class _AutocompleteSearch extends State<AutocompleteSearch> {
           ),
         ),
       ),
-      fieldViewBuilder: (
-          BuildContext context,
+      fieldViewBuilder: (BuildContext context,
           TextEditingController fieldTextEditingController,
           FocusNode fieldFocusNode,
-          VoidCallback onFieldSubmitted
-          ) {
+          VoidCallback onFieldSubmitted) {
         return TextFormField(
           controller: fieldTextEditingController,
           focusNode: fieldFocusNode,
@@ -350,12 +340,13 @@ class _AutocompleteSearch extends State<AutocompleteSearch> {
           },
           decoration: InputDecoration(
             hintText: "Search",
-            prefixIcon: Icon(Icons.search),
+            prefixIcon: const Icon(Icons.search),
             filled: true,
             fillColor: Colors.grey[300],
             border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(20.0),
-                borderSide: const BorderSide(width: 0, style: BorderStyle.none)),
+                borderSide:
+                    const BorderSide(width: 0, style: BorderStyle.none)),
           ),
           style: const TextStyle(fontWeight: FontWeight.bold),
         );
@@ -430,10 +421,10 @@ class LogoArea extends StatelessWidget {
   const LogoArea({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       child: Row(
         children: [
-         // Image.asset('../assets/haizea.png', fit: BoxFit.cover),
+          // Image.asset('../assets/haizea.png', fit: BoxFit.cover),
         ],
       ),
       height: 68.0,
@@ -442,8 +433,6 @@ class LogoArea extends StatelessWidget {
   }
 }
 
-
-
 /*
 Page information
  */
@@ -451,17 +440,16 @@ class PageInfo extends StatelessWidget {
   //const PageInfo({Key? key}) : super(key: key);
 
   String lastLoginTime;
-  String username="";
+  String username = "";
 
-  PageInfo(this.lastLoginTime) {
-  }
+  PageInfo(this.lastLoginTime);
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text("Find somewhere new in ACT!",
-            style: const TextStyle(
+        const Text("Find somewhere new in ACT!",
+            style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 32.0,
               color: Colors.white,
@@ -477,9 +465,7 @@ class PageInfo extends StatelessWidget {
   }
 }
 
-/**
- * X&Y axis Dropdown Menue
- */
+/// X&Y axis Dropdown Menue
 class AxisDropDown extends StatefulWidget {
   const AxisDropDown({Key? key}) : super(key: key);
 

@@ -1,7 +1,8 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import 'profile_page.dart';
 import 'home_page.dart';
-import 'sign_in_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:climate_stats/authentication_service.dart';
 import 'package:provider/provider.dart';
@@ -13,7 +14,7 @@ class TopAppBar extends StatefulWidget implements PreferredSizeWidget {
   User userInfo;
 
   /// TopAppBar({Key key}) : super(key: key);
-  TopAppBar(this.title, this.userInfo) {}
+  TopAppBar(this.title, this.userInfo);
 
   @override
   State<StatefulWidget> createState() {
@@ -28,7 +29,7 @@ class _TopAppBar extends State<TopAppBar> {
   String title;
   User userInfo;
 
-  _TopAppBar(this.title, this.userInfo) {}
+  _TopAppBar(this.title, this.userInfo);
 
   @override
   void initState() {
@@ -38,9 +39,9 @@ class _TopAppBar extends State<TopAppBar> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(left: 10.0, right: 10.0),
+      padding: const EdgeInsets.only(left: 10.0, right: 10.0),
       height: barHeight,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         image: DecorationImage(
             image: AssetImage('../assets/background_blur_appbar.png'),
             fit: BoxFit.cover),
@@ -51,13 +52,13 @@ class _TopAppBar extends State<TopAppBar> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           Container(
-            padding: EdgeInsets.only(right: 70.0),
+            padding: const EdgeInsets.only(right: 70.0),
             height: barHeight * .8,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
                 Container(
-                    padding: EdgeInsets.only(right: 10.0),
+                    padding: const EdgeInsets.only(right: 10.0),
                     child: TextButton.icon(
                       onPressed: () {
                         Navigator.push(
@@ -68,7 +69,7 @@ class _TopAppBar extends State<TopAppBar> {
                       },
                       icon: Image.asset('../assets/haizea.png',
                           fit: BoxFit.cover),
-                      label: Text(""),
+                      label: const Text(""),
                     )),
               ],
             ),
@@ -77,7 +78,7 @@ class _TopAppBar extends State<TopAppBar> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               Container(
-                  padding: EdgeInsets.only(right: 10.0),
+                  padding: const EdgeInsets.only(right: 10.0),
                   child: _popupMenuButton(context, userInfo, title)),
             ],
           ),
@@ -93,7 +94,7 @@ Pop Menu
 PopupMenuButton _popupMenuButton(
     BuildContext context, User userInfo, String titleText) {
   return PopupMenuButton(
-    icon: Icon(Icons.menu, color: Colors.white),
+    icon: const Icon(Icons.menu, color: Colors.white),
     itemBuilder: (BuildContext context) {
       return [
         PopupMenuItem(
