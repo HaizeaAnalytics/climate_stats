@@ -78,6 +78,7 @@ class _InputFieldsState extends State<InputFields> {
                   width: 500,
                   child: Column(
                     children: [
+                      //First name field
                       TextFormField(
                         controller: firstNameController,
                         decoration: InputDecoration(
@@ -94,6 +95,7 @@ class _InputFieldsState extends State<InputFields> {
                         },
                       ),
                       const SizedBox(height: 10),
+                      // Last name field
                       TextFormField(
                         controller: lastNameController,
                         decoration: InputDecoration(
@@ -110,6 +112,7 @@ class _InputFieldsState extends State<InputFields> {
                         },
                       ),
                       const SizedBox(height: 10),
+                      // Phone number field
                       TextFormField(
                         controller: phoneNumberController,
                         keyboardType: TextInputType.number,
@@ -217,8 +220,7 @@ class _InputFieldsState extends State<InputFields> {
                           Colors.grey.shade200),
                     ),
                     onPressed: () => {
-                      // Validate will return true if the form is valid,
-                      // or false if the form is invalid
+                      // Validate form and password
                       if (_formKey.currentState!.validate() && _isValid)
                         {
                           // Sign the user up (create user account)
@@ -254,6 +256,7 @@ class _InputFieldsState extends State<InputFields> {
     });
   }
 
+  // Set Password Validity
   void _setValid(bool set) {
     setState(() {
       _isValid = set;

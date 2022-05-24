@@ -57,6 +57,7 @@ class _InputFieldsState extends State<InputFields> {
                 const SizedBox(
                   height: 50,
                 ),
+                // Heading
                 const Text("Welcome to Haizea Climate Statistics.",
                     textScaleFactor: 2.5,
                     style: TextStyle(
@@ -66,11 +67,11 @@ class _InputFieldsState extends State<InputFields> {
                 const SizedBox(
                   height: 50,
                 ),
-                // Email Field
                 SizedBox(
                   width: 500,
                   child: Column(
                     children: [
+                      // Email Field
                       TextFormField(
                         controller: emailController,
                         decoration: InputDecoration(

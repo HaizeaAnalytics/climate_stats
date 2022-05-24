@@ -30,9 +30,11 @@ class AuthenticationService {
       required String lastName,
       required phoneNumber}) async {
     try {
+      // Create user account
       UserCredential result = (await _firebaseAuth
           .createUserWithEmailAndPassword(email: email, password: password));
       User? user = result.user;
+      // Create firestore entry of user
       if (user != null) {
         await FirebaseFirestore.instance
             .collection('userInfo')
