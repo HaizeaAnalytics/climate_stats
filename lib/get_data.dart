@@ -40,10 +40,10 @@ Future<List?> getPolygon(String address) async {
 }
 
 /// Retrieves the data from the tree data set for a given list of coordinates.
+/// Returns as list of dates, list of values
 ///
-/// Takes [List] of coordinates as param. Void return should be replaced with
-/// the JSON that is returned.
-Future<String?> getTreeData(List coordinates) async {
+/// Takes [List] of coordinates as param.
+Future<List<List<double>>?> getTreeData(List coordinates) async {
   var headers = {'Content-Type': 'application/json'};
   var request = http.Request('POST', Uri.parse(
       // Change this URL to target a different API endpoint
@@ -64,13 +64,15 @@ Future<String?> getTreeData(List coordinates) async {
   http.StreamedResponse response = await request.send();
 
   if (response.statusCode == 200) {
-    return (await response.stream.bytesToString());
+    String s = await response.stream.bytesToString();
+    return (await _split(s));
   } else {
     print(response.reasonPhrase);
+    return null;
   }
 }
 
-Future<List> split(String str) async {
+Future<List<List<double>>> _split(String str) async {
   LineSplitter ls = const LineSplitter();
   List<String> list = ls.convert(str);
 

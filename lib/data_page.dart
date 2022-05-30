@@ -1,5 +1,7 @@
 // ignore_for_file: avoid_print
 
+import 'dart:math';
+
 import 'package:fl_chart/fl_chart.dart'; // Outdated should not be used in null safe library
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -15,8 +17,8 @@ String userUid = "";
 
 // Vars for accepting input/ graphing
 TextEditingController textController = TextEditingController();
-dynamic dates;
-dynamic values;
+List<double> dates = [0, 10];
+List<double> values = [0, 10];
 
 class DataPage extends StatelessWidget {
   // const DataPage({Key? key}) : super(key:key);
@@ -29,7 +31,7 @@ class DataPage extends StatelessWidget {
     lastLoginTime = userInfo.metadata.lastSignInTime!.toLocal().toString();
   }
 
-// Layout of the data page
+  // Layout of the data page
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -97,7 +99,6 @@ class SearchBar extends StatelessWidget {
         autofocus: true,
         controller: textController,
         decoration: InputDecoration(
-          // labelText: "Finds somewhere new.",
           // labelStyle: TextStyle(fontSize: 24),
           hintText: "Search Address",
           prefixIcon: const Icon(Icons.search),
@@ -169,7 +170,8 @@ class SubmitButton extends StatelessWidget {
         child: ElevatedButton(
           onPressed: () async {
             // Get the contents of the search bar
-            String address = textController.text;
+            // Trimmed to remove trailing or leading whitespace
+            String address = textController.text.trim();
 
             // If address provided, get data
             if (address.isNotEmpty) {
@@ -178,10 +180,11 @@ class SubmitButton extends StatelessWidget {
               // Step 2: Get the time series (tree data) using coordinates
               if (coordinates != null) {
                 final treeData = await data.getTreeData(coordinates);
-                //print(treeData);
-                var splitdata = await data.split(treeData!);
-                dates = splitdata[0];
-                values = splitdata[1];
+                //var splitdata = await data.split(treeData!);
+                //final list = await data.toList(treeData);
+                dates = treeData![0];
+                values = treeData[1];
+                // Print the values to the console (for testing/ demo purposes)
                 print(dates);
                 print(values);
               } else {
@@ -194,6 +197,7 @@ class SubmitButton extends StatelessWidget {
                         ));
               }
               // Step 3: Make graph using time series data
+              build(context);
             }
 
             // If no address provided, prompt user
@@ -201,7 +205,7 @@ class SubmitButton extends StatelessWidget {
               showDialog(
                   context: context,
                   builder: (BuildContext context) => const AlertDialog(
-                        title: Text('Empty field'),
+                        title: Text('No address provided'),
                         content: Text('Please enter an ACT street address.'),
                       ));
             }
@@ -267,10 +271,15 @@ class LineChartWidget extends StatelessWidget {
       child: LineChart(
         LineChartData(
             backgroundColor: const Color(0xff23b636),
-            minX: 0,
-            maxX: 11,
-            minY: 0,
-            maxY: 5,
+
+            // Set Max and Min from dates, values
+            // Need null checking
+            minX: (dates).reduce(min),
+            maxX: (dates).reduce(max),
+            minY: (values).reduce(min),
+            maxY: (values).reduce(max),
+
+            // Set the other chart parameters
             titlesData: LineTitles.getTitleData(),
             gridData: FlGridData(
                 show: true,
